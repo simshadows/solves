@@ -39,6 +39,14 @@ const config = (configArgs) => ({
         // to include the ".ts" extension when importing modules within a Typescript file.
         // I would prefer if I just included file extensions explicitly.
         extensions: [".ts", ".js"],
+        fallback: {
+            "buffer": require.resolve("buffer/"),
+            "crypto": require.resolve("crypto-browserify"),
+            "events": require.resolve("events/"),
+            "path": require.resolve("path-browserify"),
+            "stream": require.resolve("stream-browserify"),
+            "string_decoder": require.resolve("string_decoder/"),
+        },
     },
     plugins: [
         new HtmlWebpackPlugin(htmlWebpackPluginCommon(configArgs, {})),
@@ -59,6 +67,7 @@ const config = (configArgs) => ({
         new CopyPlugin({
             patterns: [
                 { from: "public" },
+                { from: "src/_app/clingo/compiled-files/clingo.wasm" },
             ],
         }),
     ],

@@ -6,6 +6,10 @@
   "description": "Facilitates the development of user-friendly problem solving apps powered by declarative programming tools.",
   "keywords": [],
   "packageManager": "yarn@3.2.0",
+  "scripts": {
+    "start": "yarn workspace solves start",
+    "build": "yarn workspace solves build"
+  },
   "workspaces": [
     "solves"
   ]
