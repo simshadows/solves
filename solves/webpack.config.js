@@ -38,7 +38,7 @@ const config = (configArgs) => ({
         // This is done as a hack to get the Typescript tooling to work since you're not allowed
         // to include the ".ts" extension when importing modules within a Typescript file.
         // I would prefer if I just included file extensions explicitly.
-        extensions: [".ts", ".js"],
+        extensions: [".tsx", ".ts", ".js"],
         fallback: {
             "buffer": require.resolve("buffer/"),
             "crypto": require.resolve("crypto-browserify"),
@@ -118,9 +118,6 @@ const config = (configArgs) => ({
             new CssMinimizerPlugin(),
         ],
     },
-    //experiments: {
-    //    asyncWebAssembly: true,
-    //},
 
     devServer: {
         static: {
