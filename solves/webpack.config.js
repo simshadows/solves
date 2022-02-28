@@ -26,7 +26,7 @@ function htmlWebpackPluginCommon(configArgs, mergeIn) {
 const config = (configArgs) => ({
     mode: configArgs.mode,
     entry: {
-        "index": path.resolve(__dirname, "src", "_app", "index.ts"),
+        "index": path.resolve(__dirname, "src", "_app", "index.tsx"),
     },
     output: {
         filename: "[name].js",
@@ -97,7 +97,7 @@ const config = (configArgs) => ({
                 },
             },
             {
-                test: /\.ts$/i,
+                test: /\.(ts|tsx)$/i,
                 use: {
                     loader: "babel-loader",
                     options: {

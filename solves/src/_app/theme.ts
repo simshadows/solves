@@ -1,3 +1,9 @@
+/*
+ * Filename: theme.ts
+ * Author:   simshadows <contact@simshadows.com>
+ * License:  GNU Affero General Public License v3 (AGPL-3.0)
+ */
+
 import {red} from "@mui/material/colors";
 import {createTheme} from "@mui/material/styles";
 

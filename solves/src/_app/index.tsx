@@ -1,5 +1,5 @@
 /*
- * Filename: index.ts
+ * Filename: index.tsx
  * Author:   simshadows <contact@simshadows.com>
  * License:  GNU Affero General Public License v3 (AGPL-3.0)
  */
@@ -8,8 +8,6 @@ import "regenerator-runtime/runtime"; // A hack to get it working. Idk how it wo
 
 import React from "react";
 import ReactDOM from "react-dom";
-const el = React.createElement;
-
 import CssBaseline from "@mui/material/CssBaseline";
 import {ThemeProvider} from "@mui/material/styles";
 import {runClingo} from "clingo-wrapper";
@@ -59,23 +57,22 @@ class TestComponent extends React.Component<{}, {text: string}> {
     }
 
     override render() {
-        return el(Container, {maxWidth: "sm"},
-            el(Box, {sx: {my: 4}},
-                el(Typography, { variant: "h4",
-                                 gutterBottom: true },
-                    "Solves Demo",
-                ),
-                this.state.text,
-            ),
-        );
+        return <Container maxWidth="sm">
+            <Box sx={{my: 4}}>
+                <Typography variant="h4" gutterBottom>
+                    Solves Demo
+                </Typography>
+                {this.state.text}
+            </Box>
+        </Container>;
     }
 }
 
 ReactDOM.render(
-    el(ThemeProvider, {theme: theme},
-        el(CssBaseline),
-        el(TestComponent),
-    ),
+    <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <TestComponent />
+    </ThemeProvider>,
     document.getElementById("app-mount")
 );
 
