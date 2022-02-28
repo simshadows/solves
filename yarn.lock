@@ -3151,6 +3151,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clingo-wrapper@workspace:clingo-wrapper":
+  version: 0.0.0-use.local
+  resolution: "clingo-wrapper@workspace:clingo-wrapper"
+  dependencies:
+    buffer: ^6.0.3
+    crypto-browserify: ^3.12.0
+    events: ^3.3.0
+    path-browserify: ^1.0.1
+    stream-browserify: ^3.0.0
+    string_decoder: ^1.3.0
+  languageName: unknown
+  linkType: soft
+
 "cliui@npm:^7.0.2":
   version: 7.0.4
   resolution: "cliui@npm:7.0.4"
@@ -8033,6 +8046,7 @@ __metadata:
     babel-loader: ^8.2.3
     browserslist: ^4.19.1
     buffer: ^6.0.3
+    clingo-wrapper: "workspace:clingo-wrapper"
     copy-webpack-plugin: <10
     crypto-browserify: ^3.12.0
     css-loader: ^6.6.0

@@ -1,7 +1,7 @@
 {
   "name": "solves-meta",
   "author": "simshadows <contact@simshadows.com>",
-  "version": "0.0.1",
+  "version": "0.0.0-dev",
   "license": "AGPLv3",
   "description": "Facilitates the development of user-friendly problem solving apps powered by declarative programming tools.",
   "keywords": [],
@@ -11,6 +11,7 @@
     "build": "yarn workspace solves build"
   },
   "workspaces": [
-    "solves"
+    "solves",
+    "clingo-wrapper"
   ]
 }

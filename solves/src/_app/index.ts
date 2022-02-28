@@ -10,7 +10,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 const el = React.createElement;
 
-import {runClingo} from "./clingo";
+import {runClingo} from "clingo-wrapper";
 
 import "./index.css";
 

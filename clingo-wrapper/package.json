@@ -1,0 +1,22 @@
+{
+  "name": "clingo-wrapper",
+  "author": "simshadows <contact@simshadows.com>",
+  "version": "0.0.0-dev",
+  "license": "MIT",
+  "description": "Wraps the compiled clingo WASM file.",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "events": "^3.3.0",
+    "path-browserify": "^1.0.1",
+    "stream-browserify": "^3.0.0",
+    "string_decoder": "^1.3.0"
+  },
+  "browser": {
+    "fs": false
+  }
+}

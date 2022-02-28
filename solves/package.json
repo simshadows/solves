@@ -1,7 +1,7 @@
 {
   "name": "solves",
   "author": "simshadows <contact@simshadows.com>",
-  "version": "0.0.1",
+  "version": "0.0.0-dev",
   "license": "AGPLv3",
   "description": "A prototype web app to demonstrate some key functionality for the solves project.",
   "keywords": [],
@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
+    "clingo-wrapper": "workspace:clingo-wrapper",
     "crypto-browserify": "^3.12.0",
     "events": "^3.3.0",
     "path-browserify": "^1.0.1",
@@ -62,8 +63,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "browser": {
-    "fs": false
   }
 }

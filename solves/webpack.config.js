@@ -31,7 +31,7 @@ const config = (configArgs) => ({
     output: {
         filename: "[name].js",
         path: path.resolve(__dirname, "dist"),
-        assetModuleFilename: "images/[name]-[hash][ext]",
+        assetModuleFilename: "assets/[name]-[hash][ext]",
         clean: true,
     },
     resolve: {
@@ -67,7 +67,6 @@ const config = (configArgs) => ({
         new CopyPlugin({
             patterns: [
                 { from: "public" },
-                { from: "src/_app/clingo/compiled-files/clingo.wasm" },
             ],
         }),
     ],
@@ -75,6 +74,10 @@ const config = (configArgs) => ({
         rules: [
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                type: "asset/inline",
+            },
+            {
+                test: /\.wasm$/i,
                 type: "asset/resource",
             },
             {
