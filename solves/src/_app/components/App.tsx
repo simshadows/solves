@@ -8,8 +8,10 @@ import React from "react";
 import {runClingo} from "clingo-wrapper";
 
 import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
 
 const query = `
 base(colour, blue).
@@ -50,12 +52,63 @@ export class App extends React.Component<{}, {text: string}> {
     }
 
     override render() {
-        return <Container maxWidth="sm">
-            <Box sx={{my: 4}}>
-                <Typography variant="h4" gutterBottom>
-                    Solves Demo
-                </Typography>
-                {this.state.text}
+        const fullColWidth = 12;
+
+        return <Container>
+            <Box sx={{my: 6}}>
+                <Grid container spacing={3}>
+                    <Grid item
+                          xs={fullColWidth / 3}
+                          sx={{minWidth: "12em"}}>
+                        <Paper sx={{ p: 2,
+                                     display: "flex",
+                                     flexDirection: "column" }}>
+                            <TextField
+                                label="Colours"
+                                multiline
+                                rows={10}
+                                defaultValue={"red\ngreen\nblue"}
+                            />
+                        </Paper>
+                    </Grid>
+                    <Grid item
+                          xs={fullColWidth / 3}
+                          sx={{minWidth: "8em"}}>
+                        <Paper sx={{ p: 2,
+                                     display: "flex",
+                                     flexDirection: "column" }}>
+                            <TextField
+                                label="Vertices"
+                                multiline
+                                rows={10}
+                                defaultValue={"v1\nv2\nv3\nv4"}
+                            />
+                        </Paper>
+                    </Grid>
+                    <Grid item
+                          xs={fullColWidth / 3}
+                          sx={{minWidth: "12em"}}>
+                        <Paper sx={{ p: 2,
+                                     display: "flex",
+                                     flexDirection: "column" }}>
+                            <TextField
+                                label="Edges"
+                                multiline
+                                rows={10}
+                                defaultValue={"v1, v2\nv2, v3\nv3, v4\nv4, v1\nv1, v3"}
+                            />
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={fullColWidth}>
+                        <Paper sx={{ p: 2,
+                                     display: "flex",
+                                     flexDirection: "column",
+                                     height: 240,
+                                     overflowWrap: "break-word" }}>
+                            {this.state.text}
+                        </Paper>
+                    </Grid>
+                </Grid>
             </Box>
         </Container>;
     }
