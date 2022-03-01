@@ -8,27 +8,12 @@ import React from "react";
 import {runClingo} from "clingo-wrapper";
 
 import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
+import Box       from "@mui/material/Box";
+import Grid      from "@mui/material/Grid";
+import Paper     from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 
-const query = `
-base(colour, blue).
-base(colour, red).
-base(colour, green).
-
-base(vertex, v1).
-base(vertex, v2).
-base(vertex, v3).
-base(vertex, v4).
-
-instance(edge(v1, v2)).
-instance(edge(v2, v3)).
-instance(edge(v3, v4)).
-instance(edge(v4, v1)).
-instance(edge(v1, v3)).
-
+const logicSpec = `
 { solution(color(V,C)) } :- base(vertex, V), base(colour, C).
 coloured(V) :- solution(color(V,C)).
 :- base(vertex, V), not coloured(V).
@@ -37,6 +22,24 @@ coloured(V) :- solution(color(V,C)).
 #show.
 #show X : solution(X).
 `;
+
+function generateBaseDef(toParse: string, name: string): string {
+    const parts = toParse.split(/\s+/);
+    const codeLines = [];
+    for (const part of parts) {
+        codeLines.push(`base(${name}, ${part}).\n`);
+    }
+    return codeLines.join("");
+}
+
+function generateInstDef(toParse: string, name: string): string {
+    const parts = toParse.split(/\s+/);
+    const codeLines = [];
+    for (const part of parts) {
+        codeLines.push(`instance(${name}(${part})).\n`);
+    }
+    return codeLines.join("");
+}
 
 interface State {
     inputColours:  string;
@@ -52,40 +55,42 @@ export class App extends React.Component<{}, State> {
         this.state = {
             inputColours:  "red\ngreen\nblue",
             inputVertices: "v1\nv2\nv3\nv4",
-            inputEdges:    "v1, v2\nv2, v3\nv3, v4\nv4, v1\nv1, v3",
+            inputEdges:    "v1,v2\nv2,v3\nv3,v4\nv4,v1\nv1,v3",
 
             outputText: "Loading...",
         };
     }
 
     async _recalculateOutputs() {
-        const result = await runClingo(query);
-        this.setState({
-            outputText: JSON.stringify(result) + String(Date.now()), // hacky temporary demo of rerender
-        });
-    }
+        const fullQuery = logicSpec.concat(
+            generateBaseDef(this.state.inputColours, "colour"),
+            generateBaseDef(this.state.inputVertices, "vertex"),
+            generateInstDef(this.state.inputEdges, "edge"),
+        );
 
-    override async componentDidMount() {
-        const result = await runClingo(query);
+        const result = await runClingo(fullQuery);
         this.setState({
             outputText: JSON.stringify(result),
         });
     }
 
+    override async componentDidMount() {
+        await this._recalculateOutputs();
+    }
+
     override render() {
         const fullColWidth = 12;
 
+        const recalcCallback = async () => this._recalculateOutputs();
+
         const setColours = async (event: {target: {value: string;};}) => {
-            this.setState({inputColours: event.target.value});
-            await this._recalculateOutputs();
+            this.setState({inputColours: event.target.value}, recalcCallback);
         };
         const setVertices = async (event: {target: {value: string;};}) => {
-            this.setState({inputVertices: event.target.value});
-            await this._recalculateOutputs();
+            this.setState({inputVertices: event.target.value}, recalcCallback);
         };
         const setEdges = async (event: {target: {value: string;};}) => {
-            this.setState({inputEdges: event.target.value});
-            await this._recalculateOutputs();
+            this.setState({inputEdges: event.target.value}, recalcCallback);
         };
 
         return <Container>
@@ -141,7 +146,8 @@ export class App extends React.Component<{}, State> {
                                      display: "flex",
                                      flexDirection: "column",
                                      height: 240,
-                                     overflowWrap: "break-word" }}>
+                                     overflowWrap: "break-word",
+                                     fontFamily: "monospace" }}>
                             {this.state.outputText}
                         </Paper>
                     </Grid>
