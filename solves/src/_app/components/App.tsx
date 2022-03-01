@@ -38,21 +38,55 @@ coloured(V) :- solution(color(V,C)).
 #show X : solution(X).
 `;
 
-export class App extends React.Component<{}, {text: string}> {
+interface State {
+    inputColours:  string;
+    inputVertices: string;
+    inputEdges:    string;
+
+    outputText: string;
+}
+
+export class App extends React.Component<{}, State> {
     constructor(props: {}) {
         super(props);
         this.state = {
-            text: "Loading...",
+            inputColours:  "red\ngreen\nblue",
+            inputVertices: "v1\nv2\nv3\nv4",
+            inputEdges:    "v1, v2\nv2, v3\nv3, v4\nv4, v1\nv1, v3",
+
+            outputText: "Loading...",
         };
+    }
+
+    async _recalculateOutputs() {
+        const result = await runClingo(query);
+        this.setState({
+            outputText: JSON.stringify(result) + String(Date.now()), // hacky temporary demo of rerender
+        });
     }
 
     override async componentDidMount() {
         const result = await runClingo(query);
-        this.setState({text: JSON.stringify(result)});
+        this.setState({
+            outputText: JSON.stringify(result),
+        });
     }
 
     override render() {
         const fullColWidth = 12;
+
+        const setColours = async (event: {target: {value: string;};}) => {
+            this.setState({inputColours: event.target.value});
+            await this._recalculateOutputs();
+        };
+        const setVertices = async (event: {target: {value: string;};}) => {
+            this.setState({inputVertices: event.target.value});
+            await this._recalculateOutputs();
+        };
+        const setEdges = async (event: {target: {value: string;};}) => {
+            this.setState({inputEdges: event.target.value});
+            await this._recalculateOutputs();
+        };
 
         return <Container>
             <Box sx={{my: 6}}>
@@ -67,7 +101,8 @@ export class App extends React.Component<{}, {text: string}> {
                                 label="Colours"
                                 multiline
                                 rows={10}
-                                defaultValue={"red\ngreen\nblue"}
+                                value={this.state.inputColours}
+                                onChange={setColours}
                             />
                         </Paper>
                     </Grid>
@@ -81,7 +116,8 @@ export class App extends React.Component<{}, {text: string}> {
                                 label="Vertices"
                                 multiline
                                 rows={10}
-                                defaultValue={"v1\nv2\nv3\nv4"}
+                                value={this.state.inputVertices}
+                                onChange={setVertices}
                             />
                         </Paper>
                     </Grid>
@@ -95,7 +131,8 @@ export class App extends React.Component<{}, {text: string}> {
                                 label="Edges"
                                 multiline
                                 rows={10}
-                                defaultValue={"v1, v2\nv2, v3\nv3, v4\nv4, v1\nv1, v3"}
+                                value={this.state.inputEdges}
+                                onChange={setEdges}
                             />
                         </Paper>
                     </Grid>
@@ -105,7 +142,7 @@ export class App extends React.Component<{}, {text: string}> {
                                      flexDirection: "column",
                                      height: 240,
                                      overflowWrap: "break-word" }}>
-                            {this.state.text}
+                            {this.state.outputText}
                         </Paper>
                     </Grid>
                 </Grid>
