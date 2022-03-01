@@ -17,6 +17,7 @@ export interface ClingoResult {
         more:  string;
     },
     solution: null | string[];
+    stderr:   string;
 }
 
 function isClingResultString(s: string): s is ClingoResultString {
@@ -30,7 +31,7 @@ function isClingResultString(s: string): s is ClingoResultString {
     }
 }
 
-async function _runClingo(program: string): Promise<any> {
+async function _runClingo(program: string): Promise<{stdout: any, stderr: string}> {
     const clingoStdout: string[] = [];
     const clingoStderr: string[] = [];
     const clingoModule = {
@@ -50,17 +51,24 @@ async function _runClingo(program: string): Promise<any> {
         [program, CLINGO_OPTIONS],
     );
 
+    const clingoStderrStr = clingoStderr.join("\n");
     if (clingoStderr.length > 0) {
-        console.log(`Clingo stderr: ${clingoStderr.join("\n")}`);
+        console.log(`Clingo stderr: ${clingoStderrStr}`);
     }
 
     const result = JSON.parse(clingoStdout.join(""));
     console.log(result);
-    return result;
+    return {
+        stdout: result,
+        stderr: clingoStderrStr,
+    };
 }
 
 export async function runClingo(program: string): Promise<ClingoResult> {
-    const result = await _runClingo(program);
+    const rawResult = await _runClingo(program);
+
+    const result: any = rawResult.stdout;
+    const clingoStderr: any = rawResult.stderr;
 
     const resultStr: any = result["Result"];
     if (typeof resultStr !== "string") throw "Expected 'Result' string.";
@@ -112,6 +120,7 @@ export async function runClingo(program: string): Promise<ClingoResult> {
             more:  modelsMore,
         },
         solution: solution,
+        stderr:   clingoStderr,
     };
     console.log(ret);
     return ret;

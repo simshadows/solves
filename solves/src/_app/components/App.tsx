@@ -5,13 +5,18 @@
  */
 
 import React from "react";
-import {runClingo} from "clingo-wrapper";
+import {
+    type ClingoResult,
+    runClingo,
+} from "clingo-wrapper";
 
 import Container from "@mui/material/Container";
 import Box       from "@mui/material/Box";
 import Grid      from "@mui/material/Grid";
 import Paper     from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
+
+import {ResultDisplay} from "./ResultDisplay";
 
 const logicSpec = `
 { solution(color(V,C)) } :- base(vertex, V), base(colour, C).
@@ -27,18 +32,18 @@ function generateBaseDef(toParse: string, name: string): string {
     const parts = toParse.split(/\s+/);
     const codeLines = [];
     for (const part of parts) {
-        codeLines.push(`base(${name}, ${part}).\n`);
+        codeLines.push(`base(${name}, ${part}).`);
     }
-    return codeLines.join("");
+    return codeLines.join("\n");
 }
 
 function generateInstDef(toParse: string, name: string): string {
     const parts = toParse.split(/\s+/);
     const codeLines = [];
     for (const part of parts) {
-        codeLines.push(`instance(${name}(${part})).\n`);
+        codeLines.push(`instance(${name}(${part})).`);
     }
-    return codeLines.join("");
+    return codeLines.join("\n");
 }
 
 interface State {
@@ -46,7 +51,7 @@ interface State {
     inputVertices: string;
     inputEdges:    string;
 
-    outputText: string;
+    outputResult: null | ClingoResult;
 }
 
 export class App extends React.Component<{}, State> {
@@ -57,21 +62,20 @@ export class App extends React.Component<{}, State> {
             inputVertices: "v1\nv2\nv3\nv4",
             inputEdges:    "v1,v2\nv2,v3\nv3,v4\nv4,v1\nv1,v3",
 
-            outputText: "Loading...",
+            outputResult: null,
         };
     }
 
     async _recalculateOutputs() {
-        const fullQuery = logicSpec.concat(
+        const fullQuery = [
+            logicSpec,
             generateBaseDef(this.state.inputColours, "colour"),
             generateBaseDef(this.state.inputVertices, "vertex"),
             generateInstDef(this.state.inputEdges, "edge"),
-        );
+        ].join("\n\n");
 
         const result = await runClingo(fullQuery);
-        this.setState({
-            outputText: JSON.stringify(result),
-        });
+        this.setState({outputResult: result});
     }
 
     override async componentDidMount() {
@@ -148,7 +152,7 @@ export class App extends React.Component<{}, State> {
                                      height: 240,
                                      overflowWrap: "break-word",
                                      fontFamily: "monospace" }}>
-                            {this.state.outputText}
+                            <ResultDisplay clingoResult={this.state.outputResult} />
                         </Paper>
                     </Grid>
                 </Grid>
