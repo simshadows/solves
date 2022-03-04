@@ -120,7 +120,7 @@ This package is licensed under the [*MIT License (MIT)*](https://opensource.org/
 
 ### Clingo
 
-This repository contains a compiled copy of [Clingo](https://potassco.org/clingo/). Clingo is licensed under the MIT license. A copy of the license can be found in [`documentation/notices/LICENSE.clingo.md`](https://github.com/simshadows/solves/blob/master/documentation/notices/LICENSE.clingo.md).
+This repository contains a compiled copy of [Clingo](https://potassco.org/clingo/). Clingo is licensed under the MIT license. A copy of the license can be found in [`clingo-wrapper/LICENSE.clingo.md`](https://github.com/simshadows/solves/blob/master/clingo-wrapper/LICENSE.clingo.md).
 
 ### Other Dependencies
 
