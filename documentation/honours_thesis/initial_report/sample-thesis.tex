@@ -1,4 +1,4 @@
-\documentclass[]{unswthesis}
+\documentclass[]{../_latex_includes/unswthesis}
 
 %%% Class options:
 
@@ -29,7 +29,7 @@
 
 
 %% My own LaTeX macros, definitions, etc
-\include{definitions}
+\include{./sections/definitions}
 
 
 \begin{document}
@@ -38,9 +38,9 @@
 \frontmatter  
 \maketitle
 
-\include{abstract}
-\include{acknowledgements}
-\include{abbreviations}
+\include{./sections/abstract}
+\include{./sections/acknowledgements}
+\include{./sections/abbreviations}
 
 \tableofcontents
 \listoffigures  % if required
@@ -49,11 +49,11 @@
 %% pages in the ``mainmatter'' section have arabic page numbers and chapters are numbered
 \mainmatter
 
-\include{introduction}
-\include{background}
-\include{mywork}
-\include{evaluation}
-\include{conclusion}
+\include{./sections/introduction}
+\include{./sections/background}
+\include{./sections/mywork}
+\include{./sections/evaluation}
+\include{./sections/conclusion}
 
 %% chapters in the ``backmatter'' section do not have chapter numbering
 %% text in the ``backmatter'' is single spaced
@@ -61,7 +61,7 @@
 \bibliographystyle{alpha}
 \bibliography{pubs}
 
-\include{appendix1}
-\include{appendix2}
+\include{./sections/appendix1}
+\include{./sections/appendix2}
 
 \end{document}

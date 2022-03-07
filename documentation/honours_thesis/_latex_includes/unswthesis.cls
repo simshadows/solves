@@ -49,8 +49,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{unswthesis}%
-    [2015/04/30 v2.0.1 Faculty of Engineering, University of NSW Thesis Class]
+\ProvidesClass{../_latex_includes/unswthesis}%
+    [2015/04/30 v2.0.1 Faculty of Engineering, University of NSW Thesis Class, modified]
 \RequirePackage{fancyhdr}
 \RequirePackage{graphics}
 \RequirePackage{units}
@@ -429,7 +429,7 @@ Graduate Research.
         \enlargethispage{\footskip}% no footer on cover
 	\begin{center}%
             \coverpagefont%
-            \includegraphics{crest}%
+            \includegraphics{../_latex_includes/crest}%
 	    \vskip 0pt plus 8fill
 	    {\boldcoverpagefont \ThesisSchoolName\par}%
 	    {\boldcoverpagefont \ThesisFacultyName\par}%
@@ -469,7 +469,7 @@ Graduate Research.
           { A thesis in fulfillment of the requirements for the degree of \\[2ex]
               \ThesisDegreeName \par}%
           \vskip 0pt plus 8fill
-          \includegraphics{crest}
+          \includegraphics{../_latex_includes/crest}
 	  \vskip 0pt plus 4fill
           \ThesisSchoolName\par
           \ThesisFacultyName\par
