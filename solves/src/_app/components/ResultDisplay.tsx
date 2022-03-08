@@ -6,9 +6,9 @@
 
 import React from "react";
 
-import {type ClingoResult} from "clingo-wrapper";
-
 import {NlToBr} from "./generic/NlToBr";
+
+import {type ClingoResult} from "../runSolver";
 
 function renderSatisfiable(solution: null | string[]) {
     return <>

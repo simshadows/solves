@@ -5,10 +5,6 @@
  */
 
 import React from "react";
-import {
-    type ClingoResult,
-    runClingo,
-} from "clingo-wrapper";
 
 import Container from "@mui/material/Container";
 import Box       from "@mui/material/Box";
@@ -18,33 +14,10 @@ import TextField from "@mui/material/TextField";
 
 import {ResultDisplay} from "./ResultDisplay";
 
-const logicSpec = `
-{ solution(color(V,C)) } :- base(vertex, V), base(colour, C).
-coloured(V) :- solution(color(V,C)).
-:- base(vertex, V), not coloured(V).
-:- solution(color(V,C1)), solution(color(V,C2)), C1 != C2.
-:- instance(edge(V1, V2)), solution(color(V1, C)), solution(color(V2, C)).
-#show.
-#show X : solution(X).
-`;
-
-function generateBaseDef(toParse: string, name: string): string {
-    const parts = toParse.split(/\s+/);
-    const codeLines = [];
-    for (const part of parts) {
-        codeLines.push(`base(${name}, ${part}).`);
-    }
-    return codeLines.join("\n");
-}
-
-function generateInstDef(toParse: string, name: string): string {
-    const parts = toParse.split(/\s+/);
-    const codeLines = [];
-    for (const part of parts) {
-        codeLines.push(`instance(${name}(${part})).`);
-    }
-    return codeLines.join("\n");
-}
+import {
+    type ClingoResult,
+    runSolver
+} from "../runSolver";
 
 interface State {
     inputColours:  string;
@@ -67,15 +40,12 @@ export class App extends React.Component<{}, State> {
     }
 
     async _recalculateOutputs() {
-        const fullQuery = [
-            logicSpec,
-            generateBaseDef(this.state.inputColours, "colour"),
-            generateBaseDef(this.state.inputVertices, "vertex"),
-            generateInstDef(this.state.inputEdges, "edge"),
-        ].join("\n\n");
-
-        const result = await runClingo(fullQuery);
-        this.setState({outputResult: result});
+        const result = await runSolver({
+            coloursText:  this.state.inputColours,
+            verticesText: this.state.inputVertices,
+            edgesText:    this.state.inputEdges,
+        });
+        this.setState({outputResult: result.resultObj});
     }
 
     override async componentDidMount() {
