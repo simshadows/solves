@@ -1,7 +1,7 @@
 %%% ====================================================================
 %%%  @LaTeX-class-file{
 %%%	filename	= "unswthesis.cls",
-%%%	version		= "2.0.1",
+%%%	version		= "2.0.1-modified",
 %%%	date		= "30 April 2015",
 %%%	writtenby	= "Geoff Oakley",
 %%%	email		= "geoffo@unsw.edu.au",
@@ -50,10 +50,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{../_latex_includes/unswthesis}%
-    [2015/04/30 v2.0.1 Faculty of Engineering, University of NSW Thesis Class, modified]
+    [2022/03/08 v2.0.1-modified Faculty of Engineering, University of NSW Thesis Class]
 \RequirePackage{fancyhdr}
 \RequirePackage{graphics}
 \RequirePackage{units}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%   CUSTOM PARAMETERS   %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\customdeliverable}[1]{\gdef\CustomDeliverableName{#1}}
+\newcommand{\CustomDeliverableName}{\@latex@error{No \noexpand\customdeliverable given}\@ehc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Changeable Parameters   %
@@ -441,7 +448,7 @@ Graduate Research.
 	    \vskip 0pt plus 4fill%
 	    {\largecoverpagefont \ThesisAuthor \par}%
             \vskip 0pt plus 12fill
-	    Thesis submitted as a requirement for the degree of\\[1ex]
+            {\CustomDeliverableName} submitted as a requirement for the degree of\\[1ex]
             \ThesisDegreeName \par%
 	    \vskip 0pt plus 12fill
             \begin{tabular}{@{}rl}

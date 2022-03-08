@@ -1,3 +1,6 @@
+# Compiled PDF will not be committed until after submission.
+initial_report/initial-report.pdf
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
