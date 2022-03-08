@@ -2,16 +2,18 @@
 
 ## Currently implemented features
 
-**Minimal functional demo of a web application based on a simple problem specification.**
-- No data validation, and vulnerable to Clingo code injection.
-- Only a functional demo. Not made for a non-technical user.
-- See `../sample_spec/` for the problem specification.
+-Minimal functional demo of a web application based on a simple problem specification.
+    - No data validation, and vulnerable to Clingo code injection.
+    - Only a functional demo. Not made for a non-technical user.
+    - See `../sample_spec/` for the problem specification.
 
-**Early-development version of a node wrapper package for Clingo.**
-- Only validated for use in a web application written in TypeScript, and bundled using Webpack.
-- Has overly complex requirements on the side of the package user (e.g. Babel polyfills). This needs improvement.
+-Early-development version of a node wrapper package for Clingo.
+    - Only validated for use in a web application written in TypeScript, and bundled using Webpack.
+    - Has overly complex requirements on the side of the package user (e.g. Babel polyfills). This needs improvement.
 
-## MVP Requirements
+## Core Proposals
+
+### Requirements
 
 - Clingo programmers using the web application generator with no web development knowledge (but understand at a high level how websites work and are hosted):
     - Must be able to easily write problem specifications that the Solves tooling can consume, with minimal documentation.
@@ -19,16 +21,6 @@
     - Must be able to generate a complete functional web application that can be deployed as-is with no modifications.
     - Must not need any web development knowledge to generate a website.
     - Can read our documentation to be guided through deploying their app to be hosted on the internet, even if they haven't done it before.
-- Web developers with experience using the implementation technologies of a generated web application:
-    - Must be able to easily understand the generated code.
-    - Must be able to easily modify the application for:
-        - Graphical styling (colours, fonts, borders, etc.).
-        - Rearrangement of UI elements.
-        - Hand-crafted designs to better guide the user through the use of the application.
-        - Further customization of UI elements to better-represent input data (e.g. dropdown menus) and output data (e.g. maybe a world map interactive graphic might be possible).
-    - *(Implementation technologies should be selected based on a balance of popularity/ecosystem and practicality.)*
-- Web developers __WITHOUT__ experience using the implementation technologies of a generated web application:
-    - [To the best of our ability] are guided to help understand the codebase.
 - Non-tech-savvy users of generated web applications:
     - Should quickly and easily understand how to use it without reading documentation, after being told what it does.
     - (If possible) should quickly and easily understand what it does without reading documentation.
@@ -37,10 +29,12 @@
     - (If possible) should be able to quickly use the app with minimal friction.
     - *(The app should be as streamlined as possible, but priority should be given to non-tech-savvy users and ease of understanding.)*
 
-## MVP Features
+### Features
 
 - **Core Web Application Generator**
-    - Generates a complete functional web application based on a specification.
+    - Generates a complete functional web application based on a specification that:
+        - can be deployed as-is without modification, and
+        - with practically no web development knowledge.
     - Uses the specification parsing package.
     - Uses Clingo as the solver backend.
 - **Core Specification Parsing Package**
@@ -51,25 +45,54 @@
     - [Optionally] may validate the Clingo code for obvious issues.
     - The package exposes an API that users of the package can easily consume.
 
-## Higher-Priority Proposed Features
+## Prioritized Proposals
 
-- **Improved I/O specification formats** [HIGH PRIORITY]
-    - E.g. support an I/O annotation syntax for Clingo source files.
-    - Idea for implementation: Maybe the alternative specification formats will be converted to the JSON syntax? This essentially uses the JSON syntax as an intermediate language.
+### Requirements
+
+- Programmers __of other solver backends__:
+    - (Similar to Clingo programmers.)
+- Web developers with experience using the implementation technologies of a generated web application:
+    - Must be able to easily understand the generated code.
+    - Must be able to easily modify the application for:
+        - Graphical styling (colours, fonts, borders, etc.).
+        - Rearrangement of UI elements.
+        - Hand-crafted designs to better guide the user through the use of the application.
+        - Further customization of UI elements to better-represent input data (e.g. dropdown menus) and output data (e.g. maybe a world map interactive graphic might be possible).
+    - *(Implementation technologies should be selected based on a balance of popularity/ecosystem and practicality.)*
+- Web developers __WITHOUT__ experience using the implementation technologies of a generated web application:
+    - [To the best of our ability] are guided to help understand the codebase.
+
+### Features
+
 - **Alternative Solver Backends Support** [HIGH PRIORITY]
     - This can involve things like preprocessors/transpilers for Clingo.
-- **Solver library for the web** [HIGH PRIORITY]
+- **Flexible generated codebase** [MEDIUM PRIORITY]
+    - The MVP only requires the generated codebase to be functional.
+    - This feature takes that a step further by making the generated codebase flexible enough to easily form the basis for a custom app.
+    - (See the *Requirements* section for details on what this feature aims for.)
+- **Improved I/O specification formats** [MEDIUM PRIORITY]
+    - E.g. support an I/O annotation syntax for Clingo source files.
+    - Idea for implementation: Maybe the alternative specification formats will be converted to the JSON syntax? This essentially uses the JSON syntax as an intermediate language.
+- **Solver library for the web** [MEDIUM PRIORITY]
     - A library that implements the parsing/solving logic, exposing an interface that a web developer can use to design their own custom UI.
     - The web app generator should just make use of this library.
-- **Alterernative Web Front-End Tooling Support** [MEDIUM PRIORITY]
+- **Alterernative Web Front-End Tooling Support** [LOW PRIORITY]
     - E.g. Angular or Vue.
 
-## Low-Priority Proposed Features
+## Draft Proposals
+
+### Requirements
+
+*(This section will not be fleshed out until later.)*
+
+### Features
 
 - **Online Repository**
     - Clingo programmers can simply submit their specs to a website (in a zip/tar file?), and the website will host a generated website through a permalink.
     - How do we sustainably deal with spam or offensive/illegal content?
-        - Fees? User accounts? Well-designed administration tools and database schema?
+        - Fees?
+        - User accounts?
+        - Well-designed administration tools and database schema?
     - This is likely to be __very challenging to secure__ since you're running arbitrary solver code on the browser.
         - E.g. if Clingo allows you to send network requests, or inject Javascript into the browser.
     - Maybe this can be implemented as a PoC?
