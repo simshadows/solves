@@ -19,6 +19,10 @@ import {
     runSolver
 } from "../runSolver";
 
+function parseInput(s: string): string[] {
+    return s.split(/\s+/);
+}
+
 interface State {
     inputColours:  string;
     inputVertices: string;
@@ -41,9 +45,9 @@ export class App extends React.Component<{}, State> {
 
     async _recalculateOutputs() {
         const result = await runSolver({
-            coloursText:  this.state.inputColours,
-            verticesText: this.state.inputVertices,
-            edgesText:    this.state.inputEdges,
+            colours:  parseInput(this.state.inputColours),
+            vertices: parseInput(this.state.inputVertices),
+            edges:    parseInput(this.state.inputEdges),
         });
         this.setState({outputResult: result.resultObj});
     }

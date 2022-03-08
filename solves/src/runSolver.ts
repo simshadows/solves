@@ -21,31 +21,27 @@ coloured(V) :- solution(color(V,C)).
 #show X : solution(X).
 `;
 
-function generateBaseDef(toParse: string, name: string): string {
-    const parts = toParse.split(/\s+/);
+function generateBaseDef(constants: string[], name: string): string {
     const codeLines = [];
-    for (const part of parts) {
+    for (const part of constants) {
         codeLines.push(`base(${name}, ${part}).`);
     }
     return codeLines.join("\n");
 }
 
-function generateInstDef(toParse: string, name: string): string {
-    const parts = toParse.split(/\s+/);
+function generateInstDef(constants: string[], name: string): string {
     const codeLines = [];
-    for (const part of parts) {
+    for (const part of constants) {
         codeLines.push(`instance(${name}(${part})).`);
     }
     return codeLines.join("\n");
 }
 
 export interface SolverParameters {
-    // Arbitrary text inputs.
-    // runSolver() will be expected to parse them for now.
-    // TODO: Implement parsing outside of the runSolver module!
-    coloursText:  string;
-    verticesText: string;
-    edgesText:    string;
+    // TODO: Make edges more suitably structured. (Use tuples?)
+    colours:  string[];
+    vertices: string[];
+    edges:    string[];
 }
 
 export interface SolverResult {
@@ -57,9 +53,9 @@ export interface SolverResult {
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     const fullQuery = [
         logicSpec,
-        generateBaseDef(params.coloursText, "colour"),
-        generateBaseDef(params.verticesText, "vertex"),
-        generateInstDef(params.edgesText, "edge"),
+        generateBaseDef(params.colours, "colour"),
+        generateBaseDef(params.vertices, "vertex"),
+        generateInstDef(params.edges, "edge"),
     ].join("\n\n");
 
     return {
