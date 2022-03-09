@@ -17,13 +17,19 @@ function renderSatisfiable(solution: null | string[]) {
 }
 
 interface Props {
+    initialized: boolean;
     clingoResult: null | ClingoResult;
 }
 
 export function ResultDisplay(props: Props) {
-    if (props.clingoResult === null) {
+    if (!props.initialized) {
+        console.assert(props.clingoResult === null);
         return <>
             Loading...
+        </>;
+    } else if (props.clingoResult === null) {
+        return <>
+            Invalid Input.
         </>;
     }
 

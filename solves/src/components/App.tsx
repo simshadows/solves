@@ -24,22 +24,36 @@ function parseInput(s: string): string[] {
 }
 
 interface State {
+    initialized: boolean;
+
     inputColours:  string;
     inputVertices: string;
     inputEdges:    string;
 
     outputResult: null | ClingoResult;
+    invalidInputLines: {
+        colours:  number[];
+        vertices: number[];
+        edges:    number[];
+    };
 }
 
 export class App extends React.Component<{}, State> {
     constructor(props: {}) {
         super(props);
         this.state = {
+            initialized: false,
+
             inputColours:  "red\ngreen\nblue",
             inputVertices: "v1\nv2\nv3\nv4",
             inputEdges:    "v1,v2\nv2,v3\nv3,v4\nv4,v1\nv1,v3",
 
             outputResult: null,
+            invalidInputLines: {
+                colours:  [],
+                vertices: [],
+                edges:    [],
+            },
         };
     }
 
@@ -49,7 +63,11 @@ export class App extends React.Component<{}, State> {
             vertices: parseInput(this.state.inputVertices),
             edges:    parseInput(this.state.inputEdges),
         });
-        this.setState({outputResult: result.resultObj});
+        this.setState({
+            initialized:       true,
+            outputResult:      result.resultObj,
+            invalidInputLines: result.invalidInputs,
+        });
     }
 
     override async componentDidMount() {
@@ -70,6 +88,9 @@ export class App extends React.Component<{}, State> {
         const setEdges = async (event: {target: {value: string;};}) => {
             this.setState({inputEdges: event.target.value}, recalcCallback);
         };
+
+        console.log("Invalid inputs:");
+        console.log(this.state.invalidInputLines);
 
         return <Container>
             <Box sx={{my: 6}}>
@@ -126,7 +147,10 @@ export class App extends React.Component<{}, State> {
                                      minHeight: 240,
                                      overflowWrap: "break-word",
                                      fontFamily: "monospace" }}>
-                            <ResultDisplay clingoResult={this.state.outputResult} />
+                            <ResultDisplay
+                                clingoResult={this.state.outputResult}
+                                initialized={this.state.initialized}
+                            />
                         </Paper>
                     </Grid>
                 </Grid>
