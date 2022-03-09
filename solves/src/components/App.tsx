@@ -10,6 +10,8 @@ import Container from "@mui/material/Container";
 import Box       from "@mui/material/Box";
 import Grid      from "@mui/material/Grid";
 import Paper     from "@mui/material/Paper";
+//import TextField from "@mui/material/TextField";
+
 
 import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";
 import {ResultDisplay} from "./ResultDisplay";
@@ -145,6 +147,22 @@ export class App extends React.Component<{}, State> {
                             />
                         </Paper>
                     </Grid>
+                    {/*
+                    <Grid item
+                          xs={fullColWidth / 3}
+                          sx={{minWidth: "12em"}}>
+                        <Paper sx={{ p: 2,
+                                     display: "flex",
+                                     flexDirection: "column" }}>
+                            <TextField
+                                id="lmaohello"
+                                label="Test"
+                                multiline
+                                rows={10}
+                            />
+                        </Paper>
+                    </Grid>
+                    */}
                     <Grid item xs={fullColWidth}>
                         <Paper sx={{ p: 2,
                                      display: "flex",

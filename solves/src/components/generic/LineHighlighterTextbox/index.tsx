@@ -1,5 +1,5 @@
 /*
- * Filename: LineHighlighterTextbox.tsx
+ * Filename: index.tsx
  * Author:   simshadows <contact@simshadows.com>
  * License:  GNU Affero General Public License v3 (AGPL-3.0)
  *
@@ -11,9 +11,13 @@
 import React from "react";
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/monokai.css";
+//import "codemirror/theme/monokai.css";
 // TODO: Change to a different theme later.
 //       I'm using monokai for now due to its salience while I debug.
+
+import TextField from "@mui/material/TextField";
+
+import "./index.css";
 
 interface Props {
     label:            string;
@@ -84,7 +88,7 @@ export class LineHighlighterTextbox extends React.Component<Props, {}> {
             mountPoint,
             {
                 mode: "javascript",
-                theme: "monokai",
+                //theme: "monokai",
             },
         );
         this.cmInstance.setValue(this.props.initialValue);
@@ -103,9 +107,19 @@ export class LineHighlighterTextbox extends React.Component<Props, {}> {
     override render() {
         this.setMarks();
         return <>
-            {this.props.label}
+            {/*
             <textarea
                 ref={this.myRefs.mount}
+            />
+            */}
+            <TextField
+                inputProps={{
+                    ref: this.myRefs.mount,
+                }}
+                label={this.props.label}
+                multiline
+                value=" "
+                rows={10}
             />
         </>;
     }
