@@ -26,7 +26,11 @@ interface Props {
     onChange:         (event: {target: {value: string;};}) => Promise<void>;
 }
 
-export class LineHighlighterTextbox extends React.Component<Props, {}> {
+interface State {
+    focused: boolean;
+}
+
+export class LineHighlighterTextbox extends React.Component<Props, State> {
     private myRefs: {
         mount: React.RefObject<HTMLTextAreaElement>;
     };
@@ -38,6 +42,9 @@ export class LineHighlighterTextbox extends React.Component<Props, {}> {
             mount: React.createRef(),
         };
         this.cmInstance = null;
+        this.state = {
+            focused: false,
+        };
     }
 
     getValue(): string {
@@ -49,9 +56,27 @@ export class LineHighlighterTextbox extends React.Component<Props, {}> {
         instance: CodeMirror.Editor,
         changeObj: CodeMirror.EditorChange,
     ): void {
-        changeObj; // Unused for now
+        changeObj; // Unused
         const newValue: string = instance.getValue();
         this.props.onChange({target: {value: newValue}});
+    }
+
+    private focusHandler(
+        instance: CodeMirror.Editor,
+        event: unknown,
+    ): void {
+        instance; // Unused
+        event; // Unused
+        this.setState({focused: true});
+    }
+
+    private blurHandler(
+        instance: CodeMirror.Editor,
+        event: unknown,
+    ): void {
+        instance; // Unused
+        event; // Unused
+        this.setState({focused: false});
     }
 
     private clearMarks(): void {
@@ -94,6 +119,8 @@ export class LineHighlighterTextbox extends React.Component<Props, {}> {
         this.cmInstance.setValue(this.props.initialValue);
         this.setMarks();
         this.cmInstance.on("change", this.changeHandler.bind(this));
+        this.cmInstance.on("focus", this.focusHandler.bind(this));
+        this.cmInstance.on("blur", this.blurHandler.bind(this));
     }
 
     override async componentWillUnmount() {
@@ -118,7 +145,8 @@ export class LineHighlighterTextbox extends React.Component<Props, {}> {
                 }}
                 label={this.props.label}
                 multiline
-                value=" "
+                focused={this.state.focused}
+                value={" " /* Hacky way to force the look we want */}
                 rows={10}
             />
         </>;
