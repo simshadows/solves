@@ -99,9 +99,6 @@ export class App extends React.Component<{}, State> {
             this.setState({inputEdges: event.target.value}, recalcCallback);
         };
 
-        console.log("Invalid inputs:");
-        console.log(this.state.invalidInputLines);
-
         return <Container>
             <Box sx={{my: 6}}>
                 <Grid container spacing={3}>

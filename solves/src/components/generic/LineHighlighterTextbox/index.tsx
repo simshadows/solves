@@ -12,8 +12,6 @@ import React from "react";
 import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 //import "codemirror/theme/monokai.css";
-// TODO: Change to a different theme later.
-//       I'm using monokai for now due to its salience while I debug.
 
 import TextField from "@mui/material/TextField";
 
@@ -35,6 +33,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
         mount: React.RefObject<HTMLTextAreaElement>;
     };
     private cmInstance: CodeMirror.EditorFromTextArea | null;
+    private currentlyHighlighted: number[];
 
     constructor(props: Props) {
         super(props);
@@ -42,6 +41,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             mount: React.createRef(),
         };
         this.cmInstance = null;
+        this.currentlyHighlighted = [];
         this.state = {
             focused: false,
         };
@@ -63,7 +63,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
 
     private focusHandler(
         instance: CodeMirror.Editor,
-        event: unknown,
+        event: FocusEvent,
     ): void {
         instance; // Unused
         event; // Unused
@@ -72,37 +72,35 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
 
     private blurHandler(
         instance: CodeMirror.Editor,
-        event: unknown,
+        event: FocusEvent,
     ): void {
         instance; // Unused
         event; // Unused
         this.setState({focused: false});
     }
 
-    private clearMarks(): void {
+    private clearHighlightedLines(): void {
         if (this.cmInstance === null) {
             console.error("Expected a CM instance.");
             return;
         }
 
-        for (const mark of this.cmInstance.getAllMarks()) {
-            mark.clear();
+        for (const line of this.currentlyHighlighted) {
+            this.cmInstance.removeLineClass(line, "wrap", "cm-invalid-line");
         }
+        this.currentlyHighlighted = [];
     }
 
-    private setMarks() {
+    private setHighlightedLines() {
         if (this.cmInstance === null) {
             console.error("Expected a CM instance.");
             return;
         }
 
-        this.clearMarks();
+        this.clearHighlightedLines();
         for (const line of this.props.errorLineNumbers) {
-            this.cmInstance.markText(
-                {line: line, ch: 0},
-                {line: line, ch: 9999}, // Arbitrary end character
-                {css: "color: #f00;"},
-            );
+            this.currentlyHighlighted.push(line);
+            this.cmInstance.addLineClass(line, "wrap", "cm-invalid-line");
         }
     }
 
@@ -117,7 +115,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             },
         );
         this.cmInstance.setValue(this.props.initialValue);
-        this.setMarks();
+        this.setHighlightedLines();
         this.cmInstance.on("change", this.changeHandler.bind(this));
         this.cmInstance.on("focus", this.focusHandler.bind(this));
         this.cmInstance.on("blur", this.blurHandler.bind(this));
@@ -132,7 +130,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
     }
 
     override render() {
-        this.setMarks();
+        this.setHighlightedLines();
         return <>
             {/*
             <textarea

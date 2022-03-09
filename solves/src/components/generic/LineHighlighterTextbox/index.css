@@ -1,3 +1,10 @@
 .CodeMirror {
     width: 100%;
 }
+
+.cm-invalid-line {
+    color: #a00;
+    font-weight: bold;
+    background-color: #fcc !important;
+}
+
