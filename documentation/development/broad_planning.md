@@ -37,6 +37,9 @@
         - with practically no web development knowledge.
     - Uses the specification parsing package.
     - Uses Clingo as the solver backend.
+    - Should it be compilable into self-contained executable file formats such as Linux ELF or Windows PE?
+        - Ideally, this should lower the barrier to entry.
+        - However, since the generated codebase is likely to be a Node package, the programmer may still need to install the Node tooling anyway to build the app.
 - **Core Specification Parsing Package**
     - Consumes Clingo code and a JSON-based I/O specification.
         - The I/O specification details the inputs and outputs of the Clingo code, and dependencies between inputs (e.g. graph edges must be between graph vertices).
@@ -102,6 +105,13 @@
     - This is likely only desired within a private network such as a corporate or university network? Or maybe behind authentication (implemented by the web server)? Otherwise, you open the server up for denial-of-service abuse if it were public.
     - This is likely to be __very challenging to secure__ since you're running arbitrary code on the server. Execution will need to somehow be sandboxed properly.
     - Maybe this can be implemented as a PoC?
+
+## Key Knowledge Gaps
+
+- How to actually write a good codebase generator?
+    - Existing tools that generate codebases include:
+        - [Create React App](https://create-react-app.dev/) makes stub web apps as fully-functional node packages.
+        - [openapi-generator](https://github.com/OpenAPITools/openapi-generator) makes REST API consumption libraries.
 
 ## Other Tasks
 

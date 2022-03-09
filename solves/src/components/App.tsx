@@ -10,8 +10,8 @@ import Container from "@mui/material/Container";
 import Box       from "@mui/material/Box";
 import Grid      from "@mui/material/Grid";
 import Paper     from "@mui/material/Paper";
-import TextField from "@mui/material/TextField";
 
+import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";
 import {ResultDisplay} from "./ResultDisplay";
 
 import {
@@ -20,7 +20,7 @@ import {
 } from "../runSolver";
 
 function parseInput(s: string): string[] {
-    return s.split(/\s+/);
+    return s.split("\n");
 }
 
 interface State {
@@ -44,6 +44,14 @@ export class App extends React.Component<{}, State> {
         this.state = {
             initialized: false,
 
+            // TODO: This is NOT the source of truth for input values. This input
+            //       value state should technically no longer exist, and we should
+            //       instead set up refs to read directly from their uncontrolled
+            //       textboxes. However, I'm going to be looking into ways to turn
+            //       LineHighlighterTextbox into a controllable component.
+            //       Resolve this ASAP! Either implement a proper uncontrolled
+            //       component, or improve LineHighlighterTextbox into a
+            //       controllable component!
             inputColours:  "red\ngreen\nblue",
             inputVertices: "v1\nv2\nv3\nv4",
             inputEdges:    "v1,v2\nv2,v3\nv3,v4\nv4,v1\nv1,v3",
@@ -101,11 +109,10 @@ export class App extends React.Component<{}, State> {
                         <Paper sx={{ p: 2,
                                      display: "flex",
                                      flexDirection: "column" }}>
-                            <TextField
+                            <LineHighlighterTextbox
                                 label="Colours"
-                                multiline
-                                rows={10}
-                                value={this.state.inputColours}
+                                initialValue={this.state.inputColours}
+                                errorLineNumbers={this.state.invalidInputLines.colours}
                                 onChange={setColours}
                             />
                         </Paper>
@@ -116,11 +123,10 @@ export class App extends React.Component<{}, State> {
                         <Paper sx={{ p: 2,
                                      display: "flex",
                                      flexDirection: "column" }}>
-                            <TextField
+                            <LineHighlighterTextbox
                                 label="Vertices"
-                                multiline
-                                rows={10}
-                                value={this.state.inputVertices}
+                                initialValue={this.state.inputVertices}
+                                errorLineNumbers={this.state.invalidInputLines.vertices}
                                 onChange={setVertices}
                             />
                         </Paper>
@@ -131,11 +137,10 @@ export class App extends React.Component<{}, State> {
                         <Paper sx={{ p: 2,
                                      display: "flex",
                                      flexDirection: "column" }}>
-                            <TextField
+                            <LineHighlighterTextbox
                                 label="Edges"
-                                multiline
-                                rows={10}
-                                value={this.state.inputEdges}
+                                initialValue={this.state.inputEdges}
+                                errorLineNumbers={this.state.invalidInputLines.edges}
                                 onChange={setEdges}
                             />
                         </Paper>

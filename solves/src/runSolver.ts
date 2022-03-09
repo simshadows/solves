@@ -64,7 +64,7 @@ function generateInstDef(constantPairs: string[], name: string): GeneratedClingo
     const clingoFacts: string[] = [];
     const invalidPairs: number[] = [];
     for (const [i, part] of constantPairs.entries()) {
-        const substrs = part.split(",");
+        const substrs = part.split(",").map((s) => s.trim());
         const isValidSyntax = (substrs.length === 2)
                               && (substrs[0]?.match(reConstant))
                               && (substrs[1]?.match(reConstant));

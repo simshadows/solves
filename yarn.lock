@@ -2079,6 +2079,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/codemirror@npm:^5.60.5":
+  version: 5.60.5
+  resolution: "@types/codemirror@npm:5.60.5"
+  dependencies:
+    "@types/tern": "*"
+  checksum: 423b6378b6415b626d9f54d37d69477f96940b30a695d4ec36402feb59a96f7ab42d1c17b8472fbb222a0966f6061deee234e37bcd3e34c75836e989dc95929d
+  languageName: node
+  linkType: hard
+
 "@types/connect-history-api-fallback@npm:^1.3.5":
   version: 1.3.5
   resolution: "@types/connect-history-api-fallback@npm:1.3.5"
@@ -2357,6 +2366,15 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/tern@npm:*":
+  version: 0.23.4
+  resolution: "@types/tern@npm:0.23.4"
+  dependencies:
+    "@types/estree": "*"
+  checksum: d8fd304f147ed08f1d075f09cb8d440b7f785f69c9ec5c30eadf98132fe3f58f3b1bbbd11283858bb261afac5a2039c1c255f290b0f6e4a47cd6a746f30a6aa8
   languageName: node
   linkType: hard
 
@@ -3525,6 +3543,13 @@ __metadata:
   version: 4.6.0
   resolution: "co@npm:4.6.0"
   checksum: 5210d9223010eb95b29df06a91116f2cf7c8e0748a9013ed853b53f362ea0e822f1e5bb054fb3cefc645239a4cf966af1f6133a3b43f40d591f3b68ed6cf0510
+  languageName: node
+  linkType: hard
+
+"codemirror@npm:^5.65.2":
+  version: 5.65.2
+  resolution: "codemirror@npm:5.65.2"
+  checksum: 8e13511319aa8b4772a4406952d89ecef63f4518fa17a3893270d9835ade59d67a94bc83918d881901abb57ed68cbbe697e720a01a43e1aae43fc0f03a6591b1
   languageName: node
   linkType: hard
 
@@ -8456,6 +8481,7 @@ __metadata:
     "@emotion/react": ^11.8.1
     "@emotion/styled": ^11.8.1
     "@mui/material": ^5.4.3
+    "@types/codemirror": ^5.60.5
     "@types/jest": ^27.4.0
     "@types/react": ^17.0.38
     "@types/react-dom": ^17.0.11
@@ -8464,6 +8490,7 @@ __metadata:
     browserslist: ^4.19.1
     buffer: ^6.0.3
     clingo-wrapper: "workspace:clingo-wrapper"
+    codemirror: ^5.65.2
     copy-webpack-plugin: <10
     crypto-browserify: ^3.12.0
     css-loader: ^6.6.0
