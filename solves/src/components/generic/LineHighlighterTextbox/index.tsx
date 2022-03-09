@@ -97,11 +97,22 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             return;
         }
 
-        this.clearHighlightedLines();
         for (const line of this.props.errorLineNumbers) {
             this.currentlyHighlighted.push(line);
             this.cmInstance.addLineClass(line, "wrap", "cm-invalid-line");
         }
+    }
+
+    private updateCMInstance() {
+        if (this.cmInstance === null) {
+            console.error("Expected a CM instance.");
+            return;
+        }
+
+        this.clearHighlightedLines();
+        this.setHighlightedLines();
+
+        this.cmInstance.setSize("100%", "230px"); // TODO: Make this height configurable!
     }
 
     override async componentDidMount() {
@@ -115,7 +126,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             },
         );
         this.cmInstance.setValue(this.props.initialValue);
-        this.setHighlightedLines();
+        this.updateCMInstance();
         this.cmInstance.on("change", this.changeHandler.bind(this));
         this.cmInstance.on("focus", this.focusHandler.bind(this));
         this.cmInstance.on("blur", this.blurHandler.bind(this));
@@ -130,7 +141,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
     }
 
     override render() {
-        this.setHighlightedLines();
+        this.updateCMInstance();
         return <>
             {/*
             <textarea
