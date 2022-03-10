@@ -47,6 +47,23 @@
 %
 
 
+% All class options:
+%
+%    undergrad (default)
+%    hdr
+%
+%    11pt (default)
+%    12pt
+%
+%    final (default)
+%    draft
+%
+%    oneside (default for hdr)
+%    twoside (default for undergrad)
+%
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{../_latex_includes/unswthesis}%
