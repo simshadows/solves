@@ -61,6 +61,15 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
         this.props.onChange({target: {value: newValue}});
     }
 
+    private outerClickHandler() {
+        if (this.cmInstance === null) {
+            console.error("Expected a CM instance.");
+            return;
+        }
+        
+        this.cmInstance.focus();
+    }
+
     private focusHandler(
         instance: CodeMirror.Editor,
         event: FocusEvent,
@@ -104,10 +113,8 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
     }
 
     private updateCMInstance() {
-        if (this.cmInstance === null) {
-            console.error("Expected a CM instance.");
-            return;
-        }
+        // May be called before a CodeMirror instance was created.
+        if (this.cmInstance === null) return;
 
         this.clearHighlightedLines();
         this.setHighlightedLines();
@@ -157,6 +164,7 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
                 focused={this.state.focused}
                 value={" " /* Hacky way to force the look we want */}
                 rows={10}
+                onClick={this.outerClickHandler.bind(this)}
             />
         </>;
     }
