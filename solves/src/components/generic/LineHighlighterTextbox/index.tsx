@@ -33,7 +33,6 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
         mount: React.RefObject<HTMLTextAreaElement>;
     };
     private cmInstance: CodeMirror.EditorFromTextArea | null;
-    private currentlyHighlighted: number[];
 
     constructor(props: Props) {
         super(props);
@@ -41,7 +40,6 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             mount: React.createRef(),
         };
         this.cmInstance = null;
-        this.currentlyHighlighted = [];
         this.state = {
             focused: false,
         };
@@ -94,10 +92,13 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             return;
         }
 
-        for (const line of this.currentlyHighlighted) {
-            this.cmInstance.removeLineClass(line, "wrap", "cm-invalid-line");
-        }
-        this.currentlyHighlighted = [];
+        this.cmInstance.eachLine((lineHandle: CodeMirror.LineHandle) => {
+            if (this.cmInstance === null) {
+                console.error("Expected a CM instance.");
+                return;
+            }
+            this.cmInstance.removeLineClass(lineHandle, "wrap", "cm-invalid-line");
+        });
     }
 
     private setHighlightedLines() {
@@ -107,7 +108,6 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
         }
 
         for (const line of this.props.errorLineNumbers) {
-            this.currentlyHighlighted.push(line);
             this.cmInstance.addLineClass(line, "wrap", "cm-invalid-line");
         }
     }
