@@ -11,7 +11,7 @@ import {
 
 export type ClingoResult = _ClingoResult;
 
-const reConstant = /^[a-z][a-z0-9]*$/;
+const reConstant = /^[a-z][a-zA-Z0-9]*$/;
 
 const logicSpec = `
 { solution(color(V,C)) } :- base(vertex, V), base(colour, C).

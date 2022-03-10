@@ -109,9 +109,11 @@
 ## Key Knowledge Gaps
 
 - How to actually write a good codebase generator?
-    - Existing tools that generate codebases include:
+    - I'll need to look into the approaches taken by other codebase generators such as:
         - [Create React App](https://create-react-app.dev/) makes stub web apps as fully-functional node packages.
         - [openapi-generator](https://github.com/OpenAPITools/openapi-generator) makes REST API consumption libraries.
+- Regex
+    - Since this project involves syntax parsing, having a deeper understanding of the capabilities of regex systems will be advantageous.
 
 ## Other Tasks
 

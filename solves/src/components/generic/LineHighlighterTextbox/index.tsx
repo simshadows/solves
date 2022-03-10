@@ -6,6 +6,13 @@
  * IMPORTANT: LineHighlighterTextbox is implemented as an uncontrolled component
  *            for now. Ideally, this should be refactored to allow it to be used
  *            as a controlled component!
+ *
+ * TODO: This component is hacky. This should be changed. Either:
+ *           1) Find a properly supported way to achieve the same thing, or
+ *           2) Commit to a different style, even if it's not compliant with
+ *              the component library.
+ *
+ * TODO: Allow this to be styled using CSS-in-JS techniques.
  */
 
 import React from "react";

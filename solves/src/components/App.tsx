@@ -164,7 +164,7 @@ export class App extends React.Component<{}, State> {
                         <Paper sx={{ p: 2,
                                      display: "flex",
                                      flexDirection: "column",
-                                     minHeight: 240,
+                                     minHeight: 200,
                                      overflowWrap: "break-word",
                                      fontFamily: "monospace" }}>
                             <ResultDisplay
