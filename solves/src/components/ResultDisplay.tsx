@@ -16,15 +16,16 @@ import Box            from "@mui/material/Box";
 
 import {type ClingoResult} from "../runSolver";
 
-const solutionRE = /(?<=color\(.*)[^,]+(?=.*\))/g;
+const solutionRE = /color\(([^,]+),([^,]+)*\)/g;
 
 function parseSolutionStr(s: string) {
-    const matches = s.match(solutionRE);
-    if (matches?.length !== 2) console.error("Expected two items.");
+    const matches = [...s.matchAll(solutionRE)];
+    if (matches.length !== 1) console.error("Expected one match.");
+    const match = matches[0];
+    if (match?.length !== 3) console.error("Expected three groups.");
     return {
-        // Intentionally treats empty string as invalid
-        vertex: matches?.[0] || "<INVALID>",
-        colour: matches?.[1] || "<INVALID>",
+        vertex: match?.[1] || "<INVALID>",
+        colour: match?.[2] || "<INVALID>",
     };
 }
 
