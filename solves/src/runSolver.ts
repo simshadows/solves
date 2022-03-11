@@ -24,8 +24,8 @@ coloured(V) :- solution(color(V,C)).
 `;
 
 const edgeValidationSpec = `
-edgeDomain(V1, V2) :- base(vertex, V1), base(vertex, V2), V1 != V2.
-:- instance(edge(V1, V2)), not edgeDomain(V1, V2).
+domainok(edge(V1, V2)) :- base(vertex, V1), base(vertex, V2), V1 != V2, instance(edge(V1, V2)).
+:- instance(X), not domainok(X).
 `;
 
 function mergeIndexLists(a: number[], b: number[]): number[] {
