@@ -2,7 +2,7 @@
   "name": "solves",
   "author": "simshadows <contact@simshadows.com>",
   "version": "0.0.0-dev",
-  "license": "AGPLv3",
+  "license": "AGPL-3.0-only",
   "description": "A prototype web app to demonstrate some key functionality for the solves project.",
   "keywords": [],
   "scripts": {

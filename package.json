@@ -2,7 +2,7 @@
   "name": "solves-meta",
   "author": "simshadows <contact@simshadows.com>",
   "version": "0.0.0-dev",
-  "license": "AGPLv3",
+  "license": "AGPL-3.0-only",
   "description": "Facilitates the development of user-friendly problem solving apps powered by declarative programming tools.",
   "keywords": [],
   "packageManager": "yarn@3.2.0",

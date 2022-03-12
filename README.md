@@ -6,9 +6,10 @@ Facilitates the development of user-friendly problem solving apps powered by dec
 
 ## License
 
-Unless specified, all original source code is licensed under the [*GNU Affero General Public License v3.0 (AGPLv3)*](https://www.gnu.org/licenses/agpl-3.0.en.html).
+Unless specified, all original source code is licensed under the [*GNU Affero General Public License v3.0 (AGPL-3.0-only)*](https://www.gnu.org/licenses/agpl-3.0.en.html).
 
-All other original work is licensed under the [*Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)*](https://creativecommons.org/licenses/by-sa/4.0/).
+All other original work is licensed under the [*Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0)*](https://creativecommons.org/licenses/by-sa/4.0/).
 
 For dependencies, see the individual sub-packages for more information.
 
+*(I am considering relicensing my thesis to CC-BY-4.0, likely when it's finalized.)*
