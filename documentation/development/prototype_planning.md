@@ -2,6 +2,8 @@
 
 *This document records possible immediate next steps for developing the prototype.*
 
+*IMPORTANT: For the meantime, this document is stale. Please refer to the thesis initial report for updated information.*
+
 ## Next Step Proposals
 
 - Implement single-file spec-parsing and UI-generation

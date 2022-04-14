@@ -4,6 +4,10 @@ Facilitates the development of user-friendly problem solving apps powered by dec
 
 **Currently in the very early prototyping stage.**
 
+## Honours Thesis
+
+This project was started for an honours thesis. This can be viewed at <https://github.com/simshadows/solves-thesis>.
+
 ## License
 
 Unless specified, all original source code is licensed under the [*GNU Affero General Public License v3.0 (AGPL-3.0-only)*](https://www.gnu.org/licenses/agpl-3.0.en.html).
