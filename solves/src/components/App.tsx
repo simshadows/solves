@@ -6,12 +6,7 @@
 
 import React from "react";
 
-import Container from "@mui/material/Container";
-import Box       from "@mui/material/Box";
-import Grid      from "@mui/material/Grid";
-import Paper     from "@mui/material/Paper";
-//import TextField from "@mui/material/TextField";
-
+import "./App.css";
 
 import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";
 import {ResultDisplay} from "./ResultDisplay";
@@ -85,8 +80,6 @@ export class App extends React.Component<{}, State> {
     }
 
     override render() {
-        const fullColWidth = 12;
-
         const recalcCallback = async () => this._recalculateOutputs();
 
         const setColours = async (event: {target: {value: string;};}) => {
@@ -99,83 +92,38 @@ export class App extends React.Component<{}, State> {
             this.setState({inputEdges: event.target.value}, recalcCallback);
         };
 
-        return <Container>
-            <Box sx={{my: 6}}>
-                <Grid container spacing={3}>
-                    <Grid item
-                          xs={fullColWidth / 3}
-                          sx={{minWidth: "12em"}}>
-                        <Paper sx={{ p: 2,
-                                     display: "flex",
-                                     flexDirection: "column" }}>
-                            <LineHighlighterTextbox
-                                label="Colours"
-                                initialValue={this.state.inputColours}
-                                errorLineNumbers={this.state.invalidInputLines.colours}
-                                onChange={setColours}
-                            />
-                        </Paper>
-                    </Grid>
-                    <Grid item
-                          xs={fullColWidth / 3}
-                          sx={{minWidth: "8em"}}>
-                        <Paper sx={{ p: 2,
-                                     display: "flex",
-                                     flexDirection: "column" }}>
-                            <LineHighlighterTextbox
-                                label="Vertices"
-                                initialValue={this.state.inputVertices}
-                                errorLineNumbers={this.state.invalidInputLines.vertices}
-                                onChange={setVertices}
-                            />
-                        </Paper>
-                    </Grid>
-                    <Grid item
-                          xs={fullColWidth / 3}
-                          sx={{minWidth: "12em"}}>
-                        <Paper sx={{ p: 2,
-                                     display: "flex",
-                                     flexDirection: "column" }}>
-                            <LineHighlighterTextbox
-                                label="Edges"
-                                initialValue={this.state.inputEdges}
-                                errorLineNumbers={this.state.invalidInputLines.edges}
-                                onChange={setEdges}
-                            />
-                        </Paper>
-                    </Grid>
-                    {/*
-                    <Grid item
-                          xs={fullColWidth / 3}
-                          sx={{minWidth: "12em"}}>
-                        <Paper sx={{ p: 2,
-                                     display: "flex",
-                                     flexDirection: "column" }}>
-                            <TextField
-                                id="lmaohello"
-                                label="Test"
-                                multiline
-                                rows={10}
-                            />
-                        </Paper>
-                    </Grid>
-                    */}
-                    <Grid item xs={fullColWidth}>
-                        <Paper sx={{ p: 2,
-                                     display: "flex",
-                                     flexDirection: "column",
-                                     minHeight: 200,
-                                     overflowWrap: "break-word",
-                                     fontFamily: "monospace" }}>
-                            <ResultDisplay
-                                clingoResult={this.state.outputResult}
-                                initialized={this.state.initialized}
-                            />
-                        </Paper>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Container>;
+        return <div id="app">
+            <div className="text-input-wrapper">
+                <LineHighlighterTextbox
+                    label="Colours"
+                    initialValue={this.state.inputColours}
+                    errorLineNumbers={this.state.invalidInputLines.colours}
+                    onChange={setColours}
+                />
+            </div>
+            <div className="text-input-wrapper">
+                <LineHighlighterTextbox
+                    label="Vertices"
+                    initialValue={this.state.inputVertices}
+                    errorLineNumbers={this.state.invalidInputLines.vertices}
+                    onChange={setVertices}
+                />
+            </div>
+            <div className="text-input-wrapper">
+                <LineHighlighterTextbox
+                    label="Edges"
+                    initialValue={this.state.inputEdges}
+                    errorLineNumbers={this.state.invalidInputLines.edges}
+                    onChange={setEdges}
+                />
+            </div>
+            <div className="output-table-wrapper">
+                <ResultDisplay
+                    clingoResult={this.state.outputResult}
+                    initialized={this.state.initialized}
+                />
+            </div>
+        </div>;
     }
 }
 

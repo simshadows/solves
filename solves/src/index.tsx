@@ -8,18 +8,16 @@ import "regenerator-runtime/runtime"; // A hack to get it working. Idk how it wo
 
 import React from "react";
 import ReactDOM from "react-dom";
-import CssBaseline from "@mui/material/CssBaseline";
-import {ThemeProvider} from "@mui/material/styles";
-
-import {theme} from "./theme";
+import "normalize.css";
 
 import {App} from "./components/App";
 
+import "./index.css";
+
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
-        <CssBaseline />
+    <div className="wrapper">
         <App />
-    </ThemeProvider>,
+    </div>,
     document.getElementById("app-mount")
 );
 
