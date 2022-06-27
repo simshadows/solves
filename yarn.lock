@@ -8057,15 +8057,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"solves-meta@workspace:.":
+"solves-concrete-prototype@workspace:solves-concrete-prototype":
   version: 0.0.0-use.local
-  resolution: "solves-meta@workspace:."
-  languageName: unknown
-  linkType: soft
-
-"solves@workspace:solves":
-  version: 0.0.0-use.local
-  resolution: "solves@workspace:solves"
+  resolution: "solves-concrete-prototype@workspace:solves-concrete-prototype"
   dependencies:
     "@babel/core": ^7.17.0
     "@babel/preset-env": ^7.16.11
@@ -8104,6 +8098,12 @@ __metadata:
     webpack: ^5.68.0
     webpack-cli: ^4.9.2
     webpack-dev-server: ^4.7.4
+  languageName: unknown
+  linkType: soft
+
+"solves-meta@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "solves-meta@workspace:."
   languageName: unknown
   linkType: soft
 

@@ -7,13 +7,13 @@
   "keywords": [],
   "packageManager": "yarn@3.2.0",
   "scripts": {
-    "start": "yarn workspace solves start",
-    "build": "yarn workspace solves build",
-    "ghpages-build": "yarn workspace solves build -o ../docs",
+    "start": "yarn workspace solves-concrete-prototype start",
+    "build": "yarn workspace solves-concrete-prototype build",
+    "ghpages-build": "yarn workspace solves-concrete-prototype build -o ../docs",
     "ghpages-serve": "python3 -m http.server --directory ./docs"
   },
   "workspaces": [
-    "solves",
+    "solves-concrete-prototype",
     "clingo-wrapper"
   ]
 }
