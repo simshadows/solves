@@ -20,8 +20,6 @@ import CodeMirror from "codemirror";
 import "codemirror/lib/codemirror.css";
 //import "codemirror/theme/monokai.css";
 
-import TextField from "@mui/material/TextField";
-
 import "./index.css";
 
 interface Props {
@@ -64,15 +62,6 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
         changeObj; // Unused
         const newValue: string = instance.getValue();
         this.props.onChange({target: {value: newValue}});
-    }
-
-    private outerClickHandler() {
-        if (this.cmInstance === null) {
-            console.error("Expected a CM instance.");
-            return;
-        }
-        
-        this.cmInstance.focus();
     }
 
     private focusHandler(
@@ -162,16 +151,8 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
                 ref={this.myRefs.mount}
             />
             */}
-            <TextField
-                inputProps={{
-                    ref: this.myRefs.mount,
-                }}
-                label={this.props.label}
-                multiline
-                focused={this.state.focused}
-                value={" " /* Hacky way to force the look we want */}
-                rows={10}
-                onClick={this.outerClickHandler.bind(this)}
+            <textarea
+                ref={this.myRefs.mount}
             />
         </>;
     }

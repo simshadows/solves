@@ -6,15 +6,9 @@
 
 import React from "react";
 
-import Table          from "@mui/material/Table";
-import TableBody      from "@mui/material/TableBody";
-import TableCell      from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead      from "@mui/material/TableHead";
-import TableRow       from "@mui/material/TableRow";
-import Box            from "@mui/material/Box";
-
 import {type ClingoResult} from "../runSolver";
+
+import "./ResultDisplay.css";
 
 const solutionRE = /color\(([^,]+),([^,]+)*\)/g;
 
@@ -31,29 +25,24 @@ function parseSolutionStr(s: string) {
 
 function renderRow(s: string, i: number) {
     const parsed = parseSolutionStr(s);
-    return <TableRow key={i}
-                     sx={{ "&:last-child td, &:last-child th": {border: 0} }} >
-        <TableCell component="th" scope="row">{parsed.vertex}</TableCell>
-        <TableCell>{parsed.colour}</TableCell>
-    </TableRow>;
+    return <tr key={i}>
+        <td>{parsed.vertex}</td>
+        <td>{parsed.colour}</td>
+    </tr>;
 }
 
 function renderSatisfiable(solution: string[]) {
-    return (
-        <TableContainer component={Box}>
-            <Table sx={{ minWidth: 650 }} size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Vertex</TableCell>
-                        <TableCell>Colour</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {solution.map(renderRow)}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+    return <table className="result-satisfiable">
+        <thead>
+            <tr>
+                <td>Vertex</td>
+                <td>Colour</td>
+            </tr>
+        </thead>
+        <tbody>
+            {solution.map(renderRow)}
+        </tbody>
+    </table>;
 }
 
 /*** ***/

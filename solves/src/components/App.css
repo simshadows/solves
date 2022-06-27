@@ -21,7 +21,7 @@
 .output-table-wrapper {
     min-height: 6em;
     width: 100%;
-    border: thin solid rgba(0, 0, 0, 0.2);
+    border: thin solid black;
     border-radius: 0.2em;
 }
 .output-table-wrapper > * {

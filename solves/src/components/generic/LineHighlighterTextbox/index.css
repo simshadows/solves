@@ -4,3 +4,7 @@
     background-color: #fcc !important;
 }
 
+.CodeMirror {
+    border: thin solid black;
+}
+
