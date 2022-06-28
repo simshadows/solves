@@ -1,0 +1,17 @@
+{
+  "name": "solves",
+  "author": "simshadows <contact@simshadows.com>",
+  "version": "0.0.0-dev",
+  "license": "AGPL-3.0-only",
+  "description": "A prototype static web application generator for \"solver apps\"..",
+  "keywords": [],
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "compile": "tsc",
+    "solves": "node ./dist"
+  },
+  "dependencies": {
+    "typescript": "^4.5.5"
+  }
+}

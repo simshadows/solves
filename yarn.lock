@@ -8107,6 +8107,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"solves@workspace:solves":
+  version: 0.0.0-use.local
+  resolution: "solves@workspace:solves"
+  dependencies:
+    typescript: ^4.5.5
+  languageName: unknown
+  linkType: soft
+
 "source-map-js@npm:^1.0.2":
   version: 1.0.2
   resolution: "source-map-js@npm:1.0.2"

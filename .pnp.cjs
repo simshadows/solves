@@ -25,6 +25,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:clingo-wrapper"\
       },\
       {\
+        "name": "solves",\
+        "reference": "workspace:solves"\
+      },\
+      {\
         "name": "solves-concrete-prototype",\
         "reference": "workspace:solves-concrete-prototype"\
       }\
@@ -33,6 +37,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
       ["clingo-wrapper", ["workspace:clingo-wrapper"]],\
+      ["solves", ["workspace:solves"]],\
       ["solves-concrete-prototype", ["workspace:solves-concrete-prototype"]],\
       ["solves-meta", ["workspace:."]]\
     ],\
@@ -10849,6 +10854,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["socks", "npm:2.6.2"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["solves", [\
+        ["workspace:solves", {\
+          "packageLocation": "./solves/",\
+          "packageDependencies": [\
+            ["solves", "workspace:solves"],\
+            ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["solves-concrete-prototype", [\
