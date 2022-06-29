@@ -3,6 +3,7 @@
 ################################
 
 /dist
+/generated-source
 
 ##############################
 ### yarn Generated Ignores ###

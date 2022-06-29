@@ -17,23 +17,47 @@ function ensureStr(obj: any, argName: string): string {
 /********************************************************************/
 
 export interface ArgValues {
-    specFilePath: string;
+    specFilePath:        string;
+    sourceOutputDirPath: string;
+    appOutputDirPath:    string;
 }
 
 const program = new Command();
 program.name("solves");
 
 program
-    .requiredOption("-s, --spec <path>");
+    .requiredOption(
+        "-s, --spec <path>",
+        "Specification file input.",
+    );
+
+program
+    .option(
+        "--source-out <path>",
+        "Output directory for the generated source code.",
+        "../../generated-source", // TODO: How to make this relative to invocation?
+    );
+
+program
+    .option(
+        "-o, --app-out <path>",
+        "Output directory for the generated static web app.",
+        "../../generated-project", // TODO: How to make this relative to invocation?
+    );
 
 program.parse();
 
 const rawOptions = program.opts();
 
-const specFilePath: string = ensureStr(rawOptions["spec"], "spec");
 const typedOptions: ArgValues = {
-    specFilePath,
+    specFilePath: ensureStr(rawOptions["spec"], "spec"),
+    sourceOutputDirPath: ensureStr(rawOptions["sourceOut"], "source-out"),
+    appOutputDirPath: ensureStr(rawOptions["appOut"], "app-out"),
 };
+
+// Some really crude validation for this prototype, for safety
+if (typedOptions.sourceOutputDirPath === "") throw "can't be empty";
+if (typedOptions.appOutputDirPath === "") throw "can't be empty";
 
 export function getCLIArgs(): Readonly<ArgValues> {
     return typedOptions;

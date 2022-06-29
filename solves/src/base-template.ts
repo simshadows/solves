@@ -13,6 +13,8 @@ import * as utils from "./utils";
 
 
 const EJS_FILE_EXTENSION = ".ejs";
+const PACKAGES_DIR_NAME = "packages";
+const CLINGO_WRAPPER_PATH = "../clingo-wrapper";
 
 export interface Substitutions {
     slug: string;
@@ -28,6 +30,21 @@ export function copyDirAndApplyTemplate(
     dst: string,
     substitutions: Substitutions,
 ) {
+    const retypedSubstitutions: {[key: string]: string} = Object.fromEntries(
+        Object.entries(substitutions),
+    );
+    _copyDirAndApplyTemplate(src, dst, retypedSubstitutions);
+    copyWorkspaces(dst);
+}
+
+/*
+ * The actual recursive portion of 'copyDirAndApplyTemplate'.
+ */
+function _copyDirAndApplyTemplate(
+    src: string,
+    dst: string,
+    substitutions: {[key: string]: string},
+) {
     if (!utils.lstatIfExist(src)?.isDirectory()) {
         throw new Error("Source isn't a directory.");
     }
@@ -40,7 +57,7 @@ export function copyDirAndApplyTemplate(
         const newSRC = path.join(src, direntObj.name);
         const newDST = path.join(dst, direntObj.name);
         if (direntObj.isDirectory()) {
-            copyDirAndApplyTemplate(newSRC, newDST, substitutions);
+            _copyDirAndApplyTemplate(newSRC, newDST, substitutions);
         } else if (direntObj.name.endsWith(EJS_FILE_EXTENSION)) {
             const fileData = fs.readFileSync(newSRC).toString();
             const modifiedDST = newDST.slice(0, -EJS_FILE_EXTENSION.length);
@@ -49,5 +66,20 @@ export function copyDirAndApplyTemplate(
             fs.copyFileSync(newSRC, newDST);
         }
     }
+}
+
+/*
+ * Copies helper workspaces into the new project.
+ */
+function copyWorkspaces(dst: string) {
+    // We just use the same function.
+    // Looks dodgy, but should work as long as no files are templates.
+    const packagesDir = path.join(dst, PACKAGES_DIR_NAME);
+    fs.mkdirSync(packagesDir);
+    _copyDirAndApplyTemplate(
+        CLINGO_WRAPPER_PATH,
+        path.join(packagesDir, path.basename(CLINGO_WRAPPER_PATH)),
+        {}
+    );
 }
 
