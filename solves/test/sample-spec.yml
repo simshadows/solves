@@ -12,7 +12,7 @@ constraints: |
   :- instance(X), not domainok(X).
 output:
   - title: Colourings
-    field-titles:
+    fields:
       vertex: Vertex
       colour: Colour
     template: colouring(%vertex%,%colour%)

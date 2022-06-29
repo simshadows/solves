@@ -12,7 +12,7 @@
   "constraints": "domainok(edge(V1,V2)) :- vertex(V1), vertex(V2), V1 != V2, edge(V1,V2).\n:- instance(X), not domainok(X).",
   "output": [
     { "title": "Colourings",
-      "field-titles": {
+      "fields": {
         "vertex": "Vertex",
         "colour": "Colour"
       },
