@@ -7,6 +7,7 @@
   "keywords": [],
   "packageManager": "yarn@3.2.0",
   "scripts": {
+    "devdebug": "yarn solves -s ./test/sample-spec.json",
     "test": "yarn workspace solves test",
     "build": "yarn workspace solves build",
     "compile": "yarn workspace solves compile",
