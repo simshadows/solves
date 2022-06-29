@@ -1,0 +1,25 @@
+slug: graph-colouring
+
+input:
+  - title: Colours
+    template: colour(%).
+  - title: Vertices
+    template: vertex(%).
+  - title: Edges
+    template: edge(%,%).
+constraints: |
+  domainok(edge(V1,V2)) :- vertex(V1), vertex(V2), V1 != V2, edge(V1,V2).
+  :- instance(X), not domainok(X).
+output:
+  - title: Colourings
+    field-titles:
+      vertex: Vertex
+      colour: Colour
+    template: colouring(%vertex%,%colour%)
+
+encoding: |
+  { colouring(V,C) } :- vertex(V), colour(C).
+  coloured(V) :- colouring(V,C).
+  :- vertex(V), not coloured(V).
+  :- colouring(V,C1), colouring(V,C2), C1 != C2.
+  :- edge(V1, V2), colouring(V1, C), colouring(V2, C).
