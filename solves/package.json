@@ -12,6 +12,7 @@
     "solves": "ts-node ./src/index.ts"
   },
   "dependencies": {
+    "@types/node": "^18.0.0",
     "ts-node": "^10.8.1",
     "typescript": "^4.5.5"
   }

@@ -1,0 +1,10 @@
+.cm-invalid-line {
+    color: #a00;
+    font-weight: bold;
+    background-color: #fcc !important;
+}
+
+.CodeMirror {
+    border: thin solid black;
+}
+
