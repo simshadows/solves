@@ -19,7 +19,7 @@ copyDirAndApplyTemplate(BASE_TEMPLATE_PATH, cliArgs.sourceOutputDirPath, {
     slug: "foo",
 });
 // TODO: Sanitize to prevent command injection
-execute(`cd ${cliArgs.sourceOutputDirPath} && yarn set version stable && yarn install`);
+execute(`cd ${cliArgs.sourceOutputDirPath} && yarn set version stable && yarn install && yarn build --output-path ${cliArgs.appOutputDirPath}`);
 
 console.log("done!")
 

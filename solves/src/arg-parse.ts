@@ -4,6 +4,8 @@
  * License:  GNU Affero General Public License v3 (AGPL-3.0)
  */
 
+import path from "path";
+
 import {Command} from "commander";
 
 // The commander package seems poorly typed, so I'll need to make explicit checks.
@@ -25,6 +27,8 @@ export interface ArgValues {
 const program = new Command();
 program.name("solves");
 
+const cwd = process.cwd();
+
 program
     .requiredOption(
         "-s, --spec <path>",
@@ -42,7 +46,7 @@ program
     .option(
         "-o, --app-out <path>",
         "Output directory for the generated static web app.",
-        "../../generated-project", // TODO: How to make this relative to invocation?
+        "../../generated-web-app", // TODO: How to make this relative to invocation?
     );
 
 program.parse();
@@ -50,9 +54,9 @@ program.parse();
 const rawOptions = program.opts();
 
 const typedOptions: ArgValues = {
-    specFilePath: ensureStr(rawOptions["spec"], "spec"),
-    sourceOutputDirPath: ensureStr(rawOptions["sourceOut"], "source-out"),
-    appOutputDirPath: ensureStr(rawOptions["appOut"], "app-out"),
+    specFilePath: path.join(cwd, ensureStr(rawOptions["spec"], "spec")),
+    sourceOutputDirPath: path.join(cwd, ensureStr(rawOptions["sourceOut"], "source-out")),
+    appOutputDirPath: path.join(cwd, ensureStr(rawOptions["appOut"], "app-out")),
 };
 
 // Some really crude validation for this prototype, for safety
