@@ -3401,6 +3401,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^9.3.0":
+  version: 9.3.0
+  resolution: "commander@npm:9.3.0"
+  checksum: d421ce66fee25792a1470c69aa8d1b86434bf873a96483aa92c8267f81a6f20c6f7c426f5e82f88ac50a8ec4855d3f2787aebcdef8aa559e1080a2337a95a217
+  languageName: node
+  linkType: hard
+
 "commondir@npm:^1.0.1":
   version: 1.0.1
   resolution: "commondir@npm:1.0.1"
@@ -8261,6 +8268,7 @@ __metadata:
   dependencies:
     "@types/ejs": ^3.1.1
     "@types/node": ^18.0.0
+    commander: ^9.3.0
     ejs: ^3.1.8
     ts-node: ^10.8.1
     typescript: ^4.5.5

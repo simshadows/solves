@@ -5,6 +5,10 @@
  */
 
 import {copyDirAndApplyTemplate} from "./base-template";
+import {getCLIArgs} from "./arg-parse";
+
+const cliArgs = getCLIArgs();
+cliArgs;
 
 console.log("Attempting to copy...");
 

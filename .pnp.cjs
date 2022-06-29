@@ -5057,6 +5057,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["commander", "npm:8.3.0"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:9.3.0", {\
+          "packageLocation": "./.yarn/cache/commander-npm-9.3.0-1393a6e1f6-d421ce66fe.zip/node_modules/commander/",\
+          "packageDependencies": [\
+            ["commander", "npm:9.3.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["commondir", [\
@@ -11024,6 +11031,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["solves", "workspace:solves"],\
             ["@types/ejs", "npm:3.1.1"],\
             ["@types/node", "npm:18.0.0"],\
+            ["commander", "npm:9.3.0"],\
             ["ejs", "npm:3.1.8"],\
             ["ts-node", "virtual:3dfe0e2bd6e4c6e909a10b10907e25f12494c30c47fb9c9c238e986fab3a30d6b9471b3e89dcf99354af5dbed1316fe43a441fb5aab3d0fdf853998155de8df7#npm:10.8.1"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"]\
