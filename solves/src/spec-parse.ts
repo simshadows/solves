@@ -19,7 +19,7 @@ interface OutputFieldSpec {
 }
 
 export interface SpecValues {
-    slug:        string;
+    name:        string;
     constraints: string;
     encoding:    string;
     
@@ -50,7 +50,7 @@ export function getSpecValues(specPath: string): SpecValues {
     }
 
     return {
-        slug: ensureStr(fileData?.slug, "slug"),
+        name: ensureStr(fileData?.name, "name"),
         constraints: ensureStr(fileData?.constraints, "constraints"),
         encoding: ensureStr(fileData?.encoding, "encoding"),
 

@@ -29,25 +29,22 @@ program.name("solves");
 
 const cwd = process.cwd();
 
-program
-    .requiredOption(
-        "-s, --spec <path>",
-        "Specification file input.",
-    );
+program.requiredOption(
+    "-s, --spec <path>",
+    "Specification file input.",
+);
 
-program
-    .option(
-        "--source-out <path>",
-        "Output directory for the generated source code.",
-        "../../generated-source", // TODO: How to make this relative to invocation?
-    );
+program.option(
+    "--source-out <path>",
+    "Output directory for the generated source code.",
+    "../../generated-source", // TODO: How to make this relative to invocation?
+);
 
-program
-    .option(
-        "-o, --app-out <path>",
-        "Output directory for the generated static web app.",
-        "../../generated-web-app", // TODO: How to make this relative to invocation?
-    );
+program.option(
+    "-o, --app-out <path>",
+    "Output directory for the generated static web app.",
+    "../../generated-web-app", // TODO: How to make this relative to invocation?
+);
 
 program.parse();
 
