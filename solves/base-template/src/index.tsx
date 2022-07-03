@@ -1,10 +1,4 @@
-/*
- * Filename: index.tsx
- * Author:   simshadows <contact@simshadows.com>
- * License:  GNU Affero General Public License v3 (AGPL-3.0)
- */
-
-import "regenerator-runtime/runtime"; // A hack to get it working. Idk how it works. It just does...
+import "regenerator-runtime/runtime";
 
 import React from "react";
 import ReactDOM from "react-dom";

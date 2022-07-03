@@ -1,8 +1,4 @@
 /*
- * Filename: index.tsx
- * Author:   simshadows <contact@simshadows.com>
- * License:  GNU Affero General Public License v3 (AGPL-3.0)
- *
  * IMPORTANT: LineHighlighterTextbox is implemented as an uncontrolled component
  *            for now. Ideally, this should be refactored to allow it to be used
  *            as a controlled component!
