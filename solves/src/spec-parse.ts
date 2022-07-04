@@ -6,16 +6,62 @@
 
 import fs from "fs";
 
+import {
+    type PartialTemplate,
+    parseSimpleTemplate,
+} from "./parse-simple-template";
+import {setDifference} from "./utils";
+
 // TODO: Not entirely sure why I'm getting type issues. We're using this as a crutch for now.
 function ensureStr(obj: any, argName: string): string {
     if (typeof obj === "string") return obj;
     throw new Error(`'${argName}' spec key is not a string.`);
 }
 
+/*
+ * Ensures that the field IDs match what's actually found in the template.
+ * Throws human-readable exceptions if errors are found.
+ */
+function validateOutputPartialSpec(o: OutputPartialSpec): void {
+    const fields: Set<string> = new Set(Object.keys(o.fields));
+    console.assert(fields.size === Object.keys(o.fields).length);
+
+    const seen: Set<string> = new Set();
+    for (const partialTemplate of o.template) {
+        if (partialTemplate.action !== "substitute") continue;
+        const name = partialTemplate.value;
+
+        if (!fields.has(name)) {
+            throw new Error(`The output titled '${o.title}' has a substitution key '${name}' that doesn't correspond to a field ID.`);
+        }
+        if (seen.has(name)) {
+            throw new Error(`The output titled '${o.title}' has a duplicate substitution key '${name}'`);
+        }
+        seen.add(name);
+    }
+
+    const unusedFields: Set<string> = setDifference(fields, seen);
+    if (unusedFields.size > 0) {
+        const s = [...unusedFields].map(x => "'" + x + "'").join(", ")
+        throw new Error(`The output titled '${o.title}' has unused fields: ${s}`);
+    }
+}
+
 /********************************************************************/
 
-interface OutputFieldSpec {
+
+interface InputPartialSpec {
     title: string;
+    template: PartialTemplate[];
+    substitutionsCount: number;
+}
+
+interface OutputPartialSpec {
+    title: string;
+    fields: {[key: string]: {
+        title: string;
+    }};
+    template: PartialTemplate[];
 }
 
 export interface SpecValues {
@@ -23,17 +69,8 @@ export interface SpecValues {
     constraints: string;
     encoding:    string;
     
-    input: {
-        title:              string;
-        template:           string;
-        substitutionsCount: number;
-    }[];
-
-    output: {
-        title: string;
-        fields: {[key: string]: OutputFieldSpec};
-        template: string;
-    }[];
+    input:  InputPartialSpec[];
+    output: OutputPartialSpec[];
 }
 
 export function getSpecValues(specPath: string): SpecValues {
@@ -61,7 +98,11 @@ export function getSpecValues(specPath: string): SpecValues {
             if (substitutionsCount === 0) {
                 throw new Error(`Input ${obj.title} must provide a template that includes substitution markers.`);
             }
-            return {title, template, substitutionsCount};
+            return {
+                title,
+                template: parseSimpleTemplate(template),
+                substitutionsCount
+            };
         }),
 
         output: output.map((obj: any) => {
@@ -79,11 +120,14 @@ export function getSpecValues(specPath: string): SpecValues {
                     return [fieldKey, {title: fieldTitle}];
                 }
             ));
-            return {
+
+            const outputObj = {
                 title,
                 fields: newFieldsEntries,
-                template,
+                template: parseSimpleTemplate(template),
             };
+            validateOutputPartialSpec(outputObj);
+            return outputObj;
         }),
     };
 }

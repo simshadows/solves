@@ -15,3 +15,9 @@ export function lstatIfExist(p: string) {
     }
 }
 
+export function setDifference<T>(a: Set<T>, b: Set<T>): Set<T> {
+    let diff: Set<T> = new Set(a);
+    for (const e of b) diff.delete(e);
+    return diff;
+}
+

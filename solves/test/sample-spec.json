@@ -3,11 +3,11 @@
 
   "input": [
     { "title": "Colours",
-      "template": "colour(%)."},
+      "template": "colour(%1%)."},
     { "title": "Vertices",
-      "template": "vertex(%)."},
+      "template": "vertex(%1%)."},
     { "title": "Edges",
-      "template": "edge(%,%)."}
+      "template": "edge(%1%,%2%)."}
   ],
   "constraints": "domainok(edge(V1,V2)) :- vertex(V1), vertex(V2), V1 != V2, edge(V1,V2).\n:- edge(V1,V2), not domainok(edge(V1,V2)).",
   "output": [
