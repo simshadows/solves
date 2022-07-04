@@ -1,17 +1,21 @@
 name: graph-colouring
 
 input:
-  - title: Colours
+  colours:
+    title: Colours
     template: colour(%1%).
-  - title: Vertices
+  vertices:
+    title: Vertices
     template: vertex(%1%).
-  - title: Edges
+  edges:
+    title: Edges
     template: edge(%1%,%2%).
 constraints: |
   domainok(edge(V1,V2)) :- vertex(V1), vertex(V2), V1 != V2, edge(V1,V2).
   :- edge(V1,V2), not domainok(edge(V1,V2)).
 output:
-  - title: Colourings
+  colourings:
+    title: Colourings
     fields:
       vertex: Vertex
       colour: Colour

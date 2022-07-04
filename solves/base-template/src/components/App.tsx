@@ -40,7 +40,8 @@ export class App extends React.Component<{}, State> {
             //       instead set up refs to read directly from their uncontrolled
             //       textboxes. However, I'm going to be looking into ways to turn
             //       LineHighlighterTextbox into a controllable component.
-            //       Resolve this ASAP! Either implement a proper uncontrolled
+            //
+            //       Either implement a proper uncontrolled
             //       component, or improve LineHighlighterTextbox into a
             //       controllable component!
             inputColours:  "red\ngreen\nblue",

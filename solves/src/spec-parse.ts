@@ -10,7 +10,10 @@ import {
     type PartialTemplate,
     parseSimpleTemplate,
 } from "./parse-simple-template";
-import {setDifference} from "./utils";
+import {
+    setDifference,
+    objectValueMap,
+} from "./utils";
 
 // TODO: Not entirely sure why I'm getting type issues. We're using this as a crutch for now.
 function ensureStr(obj: any, argName: string): string {
@@ -69,21 +72,21 @@ export interface SpecValues {
     constraints: string;
     encoding:    string;
     
-    input:  InputPartialSpec[];
-    output: OutputPartialSpec[];
+    input:  {[key: string]: InputPartialSpec};
+    output: {[key: string]: OutputPartialSpec};
 }
 
 export function getSpecValues(specPath: string): SpecValues {
     const fileData: any = JSON.parse(fs.readFileSync(specPath).toString());
 
     const input: any = fileData.input;
-    if (!(input instanceof Array)) {
-        throw new Error("Must provide an array of inputs.");
+    if (typeof input !== "object") {
+        throw new Error("Must provide an object for inputs.");
     }
 
     const output: any = fileData.output;
-    if (!(output instanceof Array)) {
-        throw new Error("Must provide an array of output.");
+    if (typeof output !== "object") {
+        throw new Error("Must provide an object for outputs.");
     }
 
     return {
@@ -91,7 +94,7 @@ export function getSpecValues(specPath: string): SpecValues {
         constraints: ensureStr(fileData?.constraints, "constraints"),
         encoding: ensureStr(fileData?.encoding, "encoding"),
 
-        input: input.map((obj: any) => {
+        input: objectValueMap(input, (obj: any) => {
             const title: string = ensureStr(obj.title, "input[].title");
             const template: string = ensureStr(obj.template, "input[].template");
             const substitutionsCount: number = (template.match(/%/g) || []).length;
@@ -105,7 +108,7 @@ export function getSpecValues(specPath: string): SpecValues {
             };
         }),
 
-        output: output.map((obj: any) => {
+        output: objectValueMap(output, (obj: any) => {
             const title: string = ensureStr(obj.title, "output[].title");
             const fields: any = obj.fields;
             if (typeof fields !== "object") {

@@ -21,3 +21,10 @@ export function setDifference<T>(a: Set<T>, b: Set<T>): Set<T> {
     return diff;
 }
 
+export function objectValueMap<InputValue, OutputValue>(
+    obj: {[key: string]: InputValue},
+    fn:  (v: InputValue) => OutputValue,
+) {
+    return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v)]));
+}
+

@@ -9,7 +9,7 @@ import path from "path";
 
 import ejs from "ejs";
 
-import * as utils from "./utils";
+import * as utils from "../utils";
 
 
 const EJS_FILE_EXTENSION = ".ejs";

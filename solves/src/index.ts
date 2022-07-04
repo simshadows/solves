@@ -4,24 +4,14 @@
  * License:  GNU Affero General Public License v3 (AGPL-3.0)
  */
 
-import {execute} from "@yarnpkg/shell";
-
 import {getCLIArgs} from "./arg-parse";
 import {getSpecValues} from "./spec-parse";
-import {copyDirAndApplyTemplate} from "./base-template";
-
-const BASE_TEMPLATE_PATH = "./base-template";
+import {generateSource} from "./code-generator";
 
 const cliArgs = getCLIArgs();
 
 const specValues = getSpecValues(cliArgs.specFilePath);
 console.log(specValues);
 
-copyDirAndApplyTemplate(BASE_TEMPLATE_PATH, cliArgs.sourceOutputDirPath, {
-    name:        specValues.name,
-    encoding:    specValues.encoding,
-    constraints: specValues.constraints,
-});
-// TODO: Sanitize to prevent command injection
-execute(`cd ${cliArgs.sourceOutputDirPath} && yarn set version stable && yarn install && yarn build --output-path ${cliArgs.appOutputDirPath}`);
+generateSource(specValues, cliArgs);
 
