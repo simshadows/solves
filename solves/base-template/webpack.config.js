@@ -77,6 +77,10 @@ const config = (configArgs) => ({
                 type: "asset/inline",
             },
             {
+                test: /\.lp$/i,
+                type: "asset/source",
+            },
+            {
                 test: /\.wasm$/i,
                 type: "asset/resource",
             },

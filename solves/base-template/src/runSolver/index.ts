@@ -3,24 +3,12 @@ import {
     runClingo,
 } from "clingo-wrapper";
 
+import logicSpecStr from "./logicSpec.lp";
+import validationSpecStr from "./validationSpec.lp";
+
 export type ClingoResult = _ClingoResult;
 
 const reConstant = /^[a-z][a-zA-Z0-9]*$/;
-
-const logicSpec = `
-{ solution(color(V,C)) } :- base(vertex, V), base(colour, C).
-coloured(V) :- solution(color(V,C)).
-:- base(vertex, V), not coloured(V).
-:- solution(color(V,C1)), solution(color(V,C2)), C1 != C2.
-:- instance(edge(V1, V2)), solution(color(V1, C)), solution(color(V2, C)).
-#show.
-#show X : solution(X).
-`;
-
-const edgeValidationSpec = `
-domainok(edge(V1, V2)) :- base(vertex, V1), base(vertex, V2), V1 != V2, instance(edge(V1, V2)).
-:- instance(X), not domainok(X).
-`;
 
 function mergeIndexLists(a: number[], b: number[]): number[] {
     const indexSet: Set<number> = new Set<number>(a.concat(b));
@@ -40,7 +28,7 @@ function generateBaseDef(constants: string[], name: string): GeneratedClingoFact
     const invalidConstants: number[] = [];
     for (const [i, constant] of constants.entries()) {
         if (constant.match(reConstant)) { // Syntax validation
-            clingoFacts.push(`base(${name}, ${constant}).`);
+            clingoFacts.push(`${name}(${constant}).`);
         } else {
             // Placeholder string added to preserve index correspondence
             clingoFacts.push("");
@@ -63,7 +51,7 @@ function generateInstDef(constantPairs: string[], name: string): GeneratedClingo
                               && (substrs[0]?.match(reConstant))
                               && (substrs[1]?.match(reConstant));
         if (isValidSyntax) {
-            clingoFacts.push(`instance(${name}(${substrs[0]}, ${substrs[1]})).`);
+            clingoFacts.push(`${name}(${substrs[0]}, ${substrs[1]}).`);
         } else {
             // Placeholder string added to preserve index correspondence
             clingoFacts.push("");
@@ -86,7 +74,7 @@ async function getInvalidEdgeFacts(
         const fullQuery = [
             requiredFacts,
             edgeFact,
-            edgeValidationSpec,
+            validationSpecStr,
         ].join("\n\n");
         const result = await runClingo(fullQuery);
         if (result.result !== "SATISFIABLE") {
@@ -149,7 +137,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
             const fullQuery = [
                 coloursAndVerticesFacts,
                 edgesFacts.clingoFacts.join("\n"),
-                logicSpec,
+                logicSpecStr,
             ].join("\n\n");
             return runClingo(fullQuery);
         } else {

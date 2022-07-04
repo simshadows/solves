@@ -18,7 +18,9 @@ const specValues = getSpecValues(cliArgs.specFilePath);
 console.log(specValues);
 
 copyDirAndApplyTemplate(BASE_TEMPLATE_PATH, cliArgs.sourceOutputDirPath, {
-    name: specValues.name,
+    name:        specValues.name,
+    encoding:    specValues.encoding,
+    constraints: specValues.constraints,
 });
 // TODO: Sanitize to prevent command injection
 execute(`cd ${cliArgs.sourceOutputDirPath} && yarn set version stable && yarn install && yarn build --output-path ${cliArgs.appOutputDirPath}`);

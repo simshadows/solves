@@ -17,7 +17,9 @@ const PACKAGES_DIR_NAME = "packages";
 const CLINGO_WRAPPER_PATH = "../clingo-wrapper";
 
 export interface Substitutions {
-    name: string;
+    name:        string;
+    encoding:    string;
+    constraints: string;
 }
 
 /*

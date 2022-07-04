@@ -9,7 +9,7 @@ input:
     template: edge(%,%).
 constraints: |
   domainok(edge(V1,V2)) :- vertex(V1), vertex(V2), V1 != V2, edge(V1,V2).
-  :- instance(X), not domainok(X).
+  :- edge(V1,V2), not domainok(edge(V1,V2)).
 output:
   - title: Colourings
     fields:

@@ -4,13 +4,13 @@ import {type ClingoResult} from "../runSolver";
 
 import "./ResultDisplay.css";
 
-const solutionRE = /color\(([^,]+),([^,]+)*\)/g;
+const solutionRE = /colouring\(([^,]+),([^,]+)*\)/g;
 
 function parseSolutionStr(s: string) {
     const matches = [...s.matchAll(solutionRE)];
-    if (matches.length !== 1) console.error("Expected one match.");
+    if (matches.length !== 1) return null;
     const match = matches[0];
-    if (match?.length !== 3) console.error("Expected three groups.");
+    if (match?.length !== 3) return null;
     return {
         vertex: match?.[1] || "<INVALID>",
         colour: match?.[2] || "<INVALID>",
@@ -19,6 +19,7 @@ function parseSolutionStr(s: string) {
 
 function renderRow(s: string, i: number) {
     const parsed = parseSolutionStr(s);
+    if (parsed === null) return null;
     return <tr key={i}>
         <td>{parsed.vertex}</td>
         <td>{parsed.colour}</td>

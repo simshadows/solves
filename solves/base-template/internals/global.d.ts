@@ -23,3 +23,8 @@ declare module '*.gif' {
     export default src;
 }
 
+declare module '*.lp' {
+    const src: string;
+    export default src;
+}
+
