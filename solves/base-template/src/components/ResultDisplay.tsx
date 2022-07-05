@@ -30,8 +30,8 @@ function renderSatisfiable(solution: string[]) {
     return <table className="result-satisfiable">
         <thead>
             <tr>
-                <td>Vertex</td>
-                <td>Colour</td>
+                <th>Vertex</th>
+                <th>Colour</th>
             </tr>
         </thead>
         <tbody>

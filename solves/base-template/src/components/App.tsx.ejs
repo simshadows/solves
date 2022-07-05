@@ -17,15 +17,23 @@ function parseInput(s: string): string[] {
 interface State {
     initialized: boolean;
 
-    inputColours:  string;
-    inputVertices: string;
-    inputEdges:    string;
+<%-
+        Object.entries(input).map(([k, v]) => {
+            const x = {};
+            x.inputID = k;
+            return ht.stateTypeInputValue(x);
+        }).join("")
+-%>
 
     outputResult: null | ClingoResult;
     invalidInputLines: {
-        colours:  number[];
-        vertices: number[];
-        edges:    number[];
+<%-
+        Object.entries(input).map(([k, v]) => {
+            const x = {};
+            x.inputID = k;
+            return ht.stateTypeInputValidation(x);
+        }).join("")
+-%>
     };
 }
 
@@ -44,24 +52,38 @@ export class App extends React.Component<{}, State> {
             //       Either implement a proper uncontrolled
             //       component, or improve LineHighlighterTextbox into a
             //       controllable component!
-            inputColours:  "red\ngreen\nblue",
-            inputVertices: "v1\nv2\nv3\nv4",
-            inputEdges:    "v1,v2\nv2,v3\nv3,v4\nv4,v1\nv1,v3",
+<%-
+            Object.entries(input).map(([k, v]) => {
+                const x = {};
+                x.inputID = k;
+                x.initialValues = v.initialValues;
+                return ht.stateInputValue(x);
+            }).join("")
+-%>
 
             outputResult: null,
             invalidInputLines: {
-                colours:  [],
-                vertices: [],
-                edges:    [],
+<%-
+            Object.entries(input).map(([k, v]) => {
+                const x = {};
+                x.inputID = k;
+                x.initialValues = v.initialValues;
+                return ht.stateInputValidation(x);
+            }).join("")
+-%>
             },
         };
     }
 
     async _recalculateOutputs() {
         const result = await runSolver({
-            colours:  parseInput(this.state.inputColours),
-            vertices: parseInput(this.state.inputVertices),
-            edges:    parseInput(this.state.inputEdges),
+<%-
+        Object.entries(input).map(([k, v]) => {
+            const x = {};
+            x.inputID = k;
+            return ht.resultParameter(x);
+        }).join("")
+-%>
         });
         this.setState({
             initialized:       true,
@@ -77,15 +99,14 @@ export class App extends React.Component<{}, State> {
     override render() {
         const recalcCallback = async () => this._recalculateOutputs();
 
-        const setColours = async (event: {target: {value: string;};}) => {
-            this.setState({inputColours: event.target.value}, recalcCallback);
-        };
-        const setVertices = async (event: {target: {value: string;};}) => {
-            this.setState({inputVertices: event.target.value}, recalcCallback);
-        };
-        const setEdges = async (event: {target: {value: string;};}) => {
-            this.setState({inputEdges: event.target.value}, recalcCallback);
-        };
+<%-
+        Object.entries(input).map(([k, v]) => {
+            const x = {};
+            x.stateValue = "input" + upperCaseFirst(k);
+            x.onChangeFnName = "set" + upperCaseFirst(k);
+            return ht.onChangeHelpers(x);
+        }).join("")
+-%>
 
         return <div id="app">
 <%-
@@ -94,10 +115,10 @@ export class App extends React.Component<{}, State> {
                     x.title = v.title;
                     x.stateValue = "input" + upperCaseFirst(k);
                     x.stateValidation = k;
-                    x.onChange = "set" + upperCaseFirst(k);
+                    x.onChangeFnName = "set" + upperCaseFirst(k);
                     return ht.jsxParts(x);
                 }).join("")
-%>
+-%>
             <div className="output-table-wrapper">
                 <ResultDisplay
                     clingoResult={this.state.outputResult}

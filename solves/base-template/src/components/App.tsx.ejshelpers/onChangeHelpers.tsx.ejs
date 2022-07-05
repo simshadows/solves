@@ -1,0 +1,3 @@
+        const <%- onChangeFnName %> = async (event: {target: {value: string;};}) => {
+            this.setState({<%- stateValue %>: event.target.value}, recalcCallback);
+        };

@@ -4,12 +4,27 @@ input:
   colours:
     title: Colours
     template: colour(%1%).
+    initialValues:
+      - red
+      - green
+      - blue
   vertices:
     title: Vertices
     template: vertex(%1%).
+    initialValues:
+      - v1
+      - v2
+      - v3
+      - v4
   edges:
     title: Edges
     template: edge(%1%,%2%).
+    initialValues:
+      - v1,v2
+      - v2,v3
+      - v3,v4
+      - v4,v1
+      - v1,v3
 output:
   colourings:
     title: Colourings

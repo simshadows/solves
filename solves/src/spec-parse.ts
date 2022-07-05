@@ -59,6 +59,7 @@ interface InputPartialSpec {
     title: string;
     template: PartialTemplate[];
     substitutionsCount: number;
+    initialValues: string[];
 }
 
 interface OutputPartialSpec {
@@ -107,13 +108,18 @@ export function getSpecValues(specPath: string): SpecValues {
             const title: string = ensureStr(obj.title, "input[].title");
             const template: string = ensureStr(obj.template, "input[].template");
             const substitutionsCount: number = (template.match(/%/g) || []).length;
+            const initialValues: string[] = obj.initialValues
+                .map((s: any) => ensureStr(s, "input[].initialValues[]"));
+
             if (substitutionsCount === 0) {
                 throw new Error(`Input ${obj.title} must provide a template that includes substitution markers.`);
             }
+
             return {
                 title,
                 template: parseSimpleTemplate(template),
-                substitutionsCount
+                substitutionsCount,
+                initialValues,
             };
         }),
 
