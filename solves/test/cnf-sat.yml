@@ -1,22 +1,26 @@
 name: cnf-sat
 
 input:
-  - title: Variables
+  variables:
+    title: Variables
     template: variable(%).
-  - title: Clause Names
+  clauseNames:
+    title: Clause Names
     template: clausename(%).
-  - title: Clauses
+  clauses:
+    title: Clauses
     template: clause(%,%).
-constraints: |
-  domainok(clause(C,pos(V))) :- clausename(C), variable(V).
-  domainok(clause(C,neg(V))) :- clausename(C), variable(V).
-  :- instance(X), not domainok(X).
 output:
-  - title: Assignment
+  assignment:
+    title: Assignment
     field-titles:
       variable: Variable
     template: assignT(%variable%)
 
+constraints: |
+  domainok(clause(C,pos(V))) :- clausename(C), variable(V).
+  domainok(clause(C,neg(V))) :- clausename(C), variable(V).
+  :- instance(X), not domainok(X).
 encoding: |
   { assignT(V) } :- variable(V).
   satisfied(C) :- clause(C,pos(V)), assignT(V).

@@ -6,6 +6,8 @@
 
 import fs from "fs";
 
+import yaml from "js-yaml";
+
 import {
     type PartialTemplate,
     parseSimpleTemplate,
@@ -77,7 +79,14 @@ export interface SpecValues {
 }
 
 export function getSpecValues(specPath: string): SpecValues {
-    const fileData: any = JSON.parse(fs.readFileSync(specPath).toString());
+    // TODO: Implement manual switching between JSON and YAML?
+    const fileData: any = (()=>{
+        try {
+            return JSON.parse(fs.readFileSync(specPath).toString());
+        } catch {
+            return yaml.load(fs.readFileSync(specPath, "utf-8").toString());
+        }
+    })();
 
     const input: any = fileData.input;
     if (typeof input !== "object") {
