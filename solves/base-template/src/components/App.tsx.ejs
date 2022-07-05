@@ -88,30 +88,16 @@ export class App extends React.Component<{}, State> {
         };
 
         return <div id="app">
-            <div className="text-input-wrapper">
-                <LineHighlighterTextbox
-                    label="Colours"
-                    initialValue={this.state.inputColours}
-                    errorLineNumbers={this.state.invalidInputLines.colours}
-                    onChange={setColours}
-                />
-            </div>
-            <div className="text-input-wrapper">
-                <LineHighlighterTextbox
-                    label="Vertices"
-                    initialValue={this.state.inputVertices}
-                    errorLineNumbers={this.state.invalidInputLines.vertices}
-                    onChange={setVertices}
-                />
-            </div>
-            <div className="text-input-wrapper">
-                <LineHighlighterTextbox
-                    label="Edges"
-                    initialValue={this.state.inputEdges}
-                    errorLineNumbers={this.state.invalidInputLines.edges}
-                    onChange={setEdges}
-                />
-            </div>
+<%-
+                Object.entries(input).map(([k, v]) => {
+                    const x = {};
+                    x.title = v.title;
+                    x.stateValue = "input" + upperCaseFirst(k);
+                    x.stateValidation = k;
+                    x.onChange = "set" + upperCaseFirst(k);
+                    return ht.jsxParts(x);
+                }).join("")
+%>
             <div className="output-table-wrapper">
                 <ResultDisplay
                     clingoResult={this.state.outputResult}

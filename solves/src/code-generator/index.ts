@@ -14,11 +14,13 @@ const BASE_TEMPLATE_PATH = "./base-template";
 
 export function generateSource(specValues: SpecValues, cliArgs: ArgValues) {
     copyDirAndApplyTemplate(BASE_TEMPLATE_PATH, cliArgs.sourceOutputDirPath, {
-        name:        specValues.name,
-        encoding:    specValues.encoding,
-        constraints: specValues.constraints,
+        ...specValues,
     });
     // TODO: Sanitize to prevent command injection
-    execute(`cd ${cliArgs.sourceOutputDirPath} && yarn set version stable && yarn install && yarn build --output-path ${cliArgs.appOutputDirPath}`);
+    execute(
+        `cd ${cliArgs.sourceOutputDirPath}`
+        + " && yarn set version stable && yarn install"
+        + ` && yarn build --output-path ${cliArgs.appOutputDirPath}`
+    );
 }
 
