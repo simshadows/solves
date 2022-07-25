@@ -29,8 +29,7 @@ input-constrained:
       - v1,v3
 
 constraints: |
-  domain(edge(V1, V2)) :- base(vertex, V1), base(vertex, V2), V1 != V2.
-#   % domainok(X) :- instance(X), domain(X).
+  domainok(edge(V1,V2)) :- base(vertex,V1), base(vertex,V2), V1 != V2, instance(edge(V1,V2)).
 #   % #show.
 #   % #show X : instance(X), not domainok(X).
 

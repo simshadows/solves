@@ -22,36 +22,23 @@ interface GeneratedClingoFacts {
     invalidConstants: number[];
 }
 
-function generateBaseDef(constants: string[], name: string): GeneratedClingoFacts {
-    console.assert(name.match(reConstant));
-    const clingoFacts: string[] = [];
-    const invalidConstants: number[] = [];
-    for (const [i, constant] of constants.entries()) {
-        if (constant.match(reConstant)) { // Syntax validation
-            clingoFacts.push(`base(${name}, ${constant}).`);
-        } else {
-            // Placeholder string added to preserve index correspondence
-            clingoFacts.push("");
-            invalidConstants.push(i);
-        }
-    }
-    return {
-        clingoFacts: clingoFacts,
-        invalidConstants: invalidConstants,
-    };
-}
-
-function generateInstDef(constantPairs: string[], name: string): GeneratedClingoFacts {
+function generateClingoFacts(
+    constantTuples:    string[],
+    name:              string,
+    lineGenFn:         (name: string, constantTuple: string) => string,
+    expectedTupleSize: number,
+): GeneratedClingoFacts {
     console.assert(name.match(reConstant));
     const clingoFacts: string[] = [];
     const invalidPairs: number[] = [];
-    for (const [i, part] of constantPairs.entries()) {
-        const substrs = part.split(",").map((s) => s.trim());
-        const isValidSyntax = (substrs.length === 2)
-                              && (substrs[0]?.match(reConstant))
-                              && (substrs[1]?.match(reConstant));
-        if (isValidSyntax) {
-            clingoFacts.push(`instance(${name}(${substrs[0]}, ${substrs[1]})).`);
+    for (const [i, part] of constantTuples.entries()) {
+        const substrs: string[] = part.split(",").map(s => s.trim());
+        
+        const isCorrectTupleSize = (substrs.length === expectedTupleSize);
+        const allConstantsAreCorrectSyntax = substrs.every(x => x.match(reConstant));
+
+        if (isCorrectTupleSize && allConstantsAreCorrectSyntax) {
+            clingoFacts.push(lineGenFn(name, substrs.join(",")));
         } else {
             // Placeholder string added to preserve index correspondence
             clingoFacts.push("");
@@ -62,6 +49,32 @@ function generateInstDef(constantPairs: string[], name: string): GeneratedClingo
         clingoFacts: clingoFacts,
         invalidConstants: invalidPairs,
     };
+}
+
+function generateBaseDef(
+    constants:         string[],
+    name:              string,
+    expectedTupleSize: number,
+): GeneratedClingoFacts {
+    return generateClingoFacts(
+        constants,
+        name,
+        (n, t) => `base(${n},${t}).`,
+        expectedTupleSize,
+    );
+}
+
+function generateInstanceDef(
+    constants:         string[],
+    name:              string,
+    expectedTupleSize: number,
+): GeneratedClingoFacts {
+    return generateClingoFacts(
+        constants,
+        name,
+        (n, t) => `instance(${n}(${t})).`,
+        expectedTupleSize,
+    );
 }
 
 async function getInvalidEdgeFacts(
@@ -115,9 +128,9 @@ export interface SolverResult {
 
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
-    const colourFacts = generateBaseDef(params.colour, "colour");
-    const vertexFacts = generateBaseDef(params.vertex, "vertex");
-    const edgeFacts = generateInstDef(params.edge, "edge");
+    const colourFacts = generateBaseDef(params.colour, "colour", 1);
+    const vertexFacts = generateBaseDef(params.vertex, "vertex", 1);
+    const edgeFacts = generateInstanceDef(params.edge, "edge", 2);
 
     const colourAndVertexFacts = [
         colourFacts.clingoFacts.join("\n"),
