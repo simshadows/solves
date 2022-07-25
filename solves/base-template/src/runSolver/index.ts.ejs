@@ -128,17 +128,35 @@ export interface SolverResult {
 
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
-    const colourFacts = generateBaseDef(params.colour, "colour", 1);
-    const vertexFacts = generateBaseDef(params.vertex, "vertex", 1);
-    const edgeFacts = generateInstanceDef(params.edge, "edge", 2);
+<%-
+    Object.entries(inputBase).map(([k, v]) => {
+        const x = {};
+        x.id = k;
+        x.tupleSize = v.parameters;
+        return ht.runSolverStep1a(x);
+    }).join("")
+-%>
+<%-
+    Object.entries(inputConstrained).map(([k, v]) => {
+        const x = {};
+        x.id = k;
+        x.tupleSize = v.parameters;
+        return ht.runSolverStep1b(x);
+    }).join("")
+-%>
 
-    const colourAndVertexFacts = [
-        colourFacts.clingoFacts.join("\n"),
-        vertexFacts.clingoFacts.join("\n"),
+    const baseFacts = [
+<%-
+        Object.entries(inputBase).map(([k, v]) => {
+            const x = {};
+            x.id = k;
+            return ht.runSolverStep2(x);
+        }).join("")
+-%>
     ].join("\n\n");
 
     const invalidEdgeFactIndices: number[] = await getInvalidEdgeFacts(
-        colourAndVertexFacts,
+        baseFacts,
         edgeFacts.clingoFacts,
     );
 
@@ -155,7 +173,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
 
         if (inputsValid) {
             const fullQuery = [
-                colourAndVertexFacts,
+                baseFacts,
                 edgeFacts.clingoFacts.join("\n"),
                 logicSpecStr,
             ].join("\n\n");
