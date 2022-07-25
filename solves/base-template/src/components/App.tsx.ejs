@@ -18,7 +18,7 @@ interface State {
     initialized: boolean;
 
 <%-
-        Object.entries(input).map(([k, v]) => {
+        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
             const x = {};
             x.inputID = k;
             return ht.stateTypeInputValue(x);
@@ -28,7 +28,7 @@ interface State {
     outputResult: null | ClingoResult;
     invalidInputLines: {
 <%-
-        Object.entries(input).map(([k, v]) => {
+        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
             const x = {};
             x.inputID = k;
             return ht.stateTypeInputValidation(x);
@@ -53,7 +53,7 @@ export class App extends React.Component<{}, State> {
             //       component, or improve LineHighlighterTextbox into a
             //       controllable component!
 <%-
-            Object.entries(input).map(([k, v]) => {
+            Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
                 const x = {};
                 x.inputID = k;
                 x.initialValues = v.initialValues;
@@ -64,7 +64,7 @@ export class App extends React.Component<{}, State> {
             outputResult: null,
             invalidInputLines: {
 <%-
-            Object.entries(input).map(([k, v]) => {
+            Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
                 const x = {};
                 x.inputID = k;
                 x.initialValues = v.initialValues;
@@ -78,7 +78,7 @@ export class App extends React.Component<{}, State> {
     async _recalculateOutputs() {
         const result = await runSolver({
 <%-
-        Object.entries(input).map(([k, v]) => {
+        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
             const x = {};
             x.inputID = k;
             return ht.resultParameter(x);
@@ -100,7 +100,7 @@ export class App extends React.Component<{}, State> {
         const recalcCallback = async () => this._recalculateOutputs();
 
 <%-
-        Object.entries(input).map(([k, v]) => {
+        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
             const x = {};
             x.stateValue = "input" + upperCaseFirst(k);
             x.onChangeFnName = "set" + upperCaseFirst(k);
@@ -110,7 +110,7 @@ export class App extends React.Component<{}, State> {
 
         return <div id="app">
 <%-
-                Object.entries(input).map(([k, v]) => {
+                Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
                     const x = {};
                     x.title = v.title;
                     x.stateValue = "input" + upperCaseFirst(k);

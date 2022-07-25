@@ -4,7 +4,7 @@ import {type ClingoResult} from "../runSolver";
 
 import "./ResultDisplay.css";
 
-const solutionRE = /colouring\(([^,]+),([^,]+)*\)/g;
+const solutionRE = /solution\(color\(([^,]+),([^,]+)*\)\)/g;
 
 function parseSolutionStr(s: string) {
     const matches = [...s.matchAll(solutionRE)];

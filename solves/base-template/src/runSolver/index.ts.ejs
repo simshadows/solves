@@ -28,7 +28,7 @@ function generateBaseDef(constants: string[], name: string): GeneratedClingoFact
     const invalidConstants: number[] = [];
     for (const [i, constant] of constants.entries()) {
         if (constant.match(reConstant)) { // Syntax validation
-            clingoFacts.push(`${name}(${constant}).`);
+            clingoFacts.push(`base(${name}, ${constant}).`);
         } else {
             // Placeholder string added to preserve index correspondence
             clingoFacts.push("");
@@ -51,7 +51,7 @@ function generateInstDef(constantPairs: string[], name: string): GeneratedClingo
                               && (substrs[0]?.match(reConstant))
                               && (substrs[1]?.match(reConstant));
         if (isValidSyntax) {
-            clingoFacts.push(`${name}(${substrs[0]}, ${substrs[1]}).`);
+            clingoFacts.push(`instance(${name}(${substrs[0]}, ${substrs[1]})).`);
         } else {
             // Placeholder string added to preserve index correspondence
             clingoFacts.push("");
@@ -87,10 +87,13 @@ async function getInvalidEdgeFacts(
 /*** ***/
 
 export interface SolverParameters {
-    // TODO: Make edges more suitably structured. (Use tuples?)
-    colours:  string[];
-    vertices: string[];
-    edges:    string[];
+<%-
+        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
+            const x = {};
+            x.inputID = k;
+            return ht.paramType(x);
+        }).join("")
+-%>
 }
 
 export interface SolverResult {
@@ -100,43 +103,47 @@ export interface SolverResult {
     invalidInputs: {
         // These are lists of integers, where each integer is an index of
         // an invalid string within the corresponding input list.
-        colours:  number[];
-        vertices: number[];
-        edges:    number[];
+<%-
+        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
+            const x = {};
+            x.inputID = k;
+            return ht.resultType(x);
+        }).join("")
+-%>
     };
 }
 
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
-    const coloursFacts = generateBaseDef(params.colours, "colour");
-    const verticesFacts = generateBaseDef(params.vertices, "vertex");
-    const edgesFacts = generateInstDef(params.edges, "edge");
+    const colourFacts = generateBaseDef(params.colour, "colour");
+    const vertexFacts = generateBaseDef(params.vertex, "vertex");
+    const edgeFacts = generateInstDef(params.edge, "edge");
 
-    const coloursAndVerticesFacts = [
-        coloursFacts.clingoFacts.join("\n"),
-        verticesFacts.clingoFacts.join("\n"),
+    const colourAndVertexFacts = [
+        colourFacts.clingoFacts.join("\n"),
+        vertexFacts.clingoFacts.join("\n"),
     ].join("\n\n");
 
     const invalidEdgeFactIndices: number[] = await getInvalidEdgeFacts(
-        coloursAndVerticesFacts,
-        edgesFacts.clingoFacts,
+        colourAndVertexFacts,
+        edgeFacts.clingoFacts,
     );
 
     const totalInvalidEdgeFacts: number[] = mergeIndexLists(
-        edgesFacts.invalidConstants,
+        edgeFacts.invalidConstants,
         invalidEdgeFactIndices,
     );
 
     const resultObj: null | ClingoResult = await (async()=>{
-        const inputsValid = (coloursFacts.invalidConstants.length == 0)
-                            && (verticesFacts.invalidConstants.length == 0)
-                            && (edgesFacts.invalidConstants.length == 0)
+        const inputsValid = (colourFacts.invalidConstants.length == 0)
+                            && (vertexFacts.invalidConstants.length == 0)
+                            && (edgeFacts.invalidConstants.length == 0)
                             && (invalidEdgeFactIndices.length === 0);
 
         if (inputsValid) {
             const fullQuery = [
-                coloursAndVerticesFacts,
-                edgesFacts.clingoFacts.join("\n"),
+                colourAndVertexFacts,
+                edgeFacts.clingoFacts.join("\n"),
                 logicSpecStr,
             ].join("\n\n");
             return runClingo(fullQuery);
@@ -148,9 +155,9 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     return {
         resultObj: resultObj,
         invalidInputs: {
-            colours:  coloursFacts.invalidConstants,
-            vertices: verticesFacts.invalidConstants,
-            edges:    totalInvalidEdgeFacts,
+            colour:  colourFacts.invalidConstants,
+            vertex:  vertexFacts.invalidConstants,
+            edge:    totalInvalidEdgeFacts,
         },
     };
 }

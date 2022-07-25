@@ -9,11 +9,6 @@ import fs from "fs";
 import yaml from "js-yaml";
 
 import {
-    type PartialTemplate,
-    parseSimpleTemplate,
-} from "./parse-simple-template";
-import {
-    setDifference,
     objectValueMap,
 } from "./utils";
 
@@ -21,6 +16,10 @@ import {
 function ensureStr(obj: any, argName: string): string {
     if (typeof obj === "string") return obj;
     throw new Error(`'${argName}' spec key is not a string.`);
+}
+function ensureNum(obj: any, argName: string): number {
+    if (typeof obj === "number") return obj;
+    throw new Error(`'${argName}' spec key is not a number.`);
 }
 
 /*
@@ -31,25 +30,20 @@ function validateOutputPartialSpec(o: OutputPartialSpec): void {
     const fields: Set<string> = new Set(Object.keys(o.fields));
     console.assert(fields.size === Object.keys(o.fields).length);
 
-    const seen: Set<string> = new Set();
-    for (const partialTemplate of o.template) {
-        if (partialTemplate.action !== "substitute") continue;
-        const name = partialTemplate.value;
+    // TODO: Length of fields?
+}
 
-        if (!fields.has(name)) {
-            throw new Error(`The output titled '${o.title}' has a substitution key '${name}' that doesn't correspond to a field ID.`);
-        }
-        if (seen.has(name)) {
-            throw new Error(`The output titled '${o.title}' has a duplicate substitution key '${name}'`);
-        }
-        seen.add(name);
-    }
-
-    const unusedFields: Set<string> = setDifference(fields, seen);
-    if (unusedFields.size > 0) {
-        const s = [...unusedFields].map(x => "'" + x + "'").join(", ")
-        throw new Error(`The output titled '${o.title}' has unused fields: ${s}`);
-    }
+function inputTransform(obj: any) {
+    // TODO: Simplify this later.
+    const title: string = ensureStr(obj.title, "input[].title");
+    const parameters: number = ensureNum(obj.params, "input[].params");
+    const initialValues: string[] = obj.initialValues
+        .map((s: any) => ensureStr(s, "input[].initialValues[]"));
+    return {
+        title,
+        parameters,
+        initialValues,
+    };
 }
 
 /********************************************************************/
@@ -57,8 +51,7 @@ function validateOutputPartialSpec(o: OutputPartialSpec): void {
 
 interface InputPartialSpec {
     title: string;
-    template: PartialTemplate[];
-    substitutionsCount: number;
+    parameters: number;
     initialValues: string[];
 }
 
@@ -67,16 +60,16 @@ interface OutputPartialSpec {
     fields: {[key: string]: {
         title: string;
     }};
-    template: PartialTemplate[];
 }
 
 export interface SpecValues {
-    name:        string;
-    constraints: string;
-    encoding:    string;
+    name:            string;
+    encoding:        string;
+    constraintsCode: string;
     
-    input:  {[key: string]: InputPartialSpec};
-    output: {[key: string]: OutputPartialSpec};
+    inputBase:        {[key: string]: InputPartialSpec};
+    inputConstrained: {[key: string]: InputPartialSpec};
+    output:           {[key: string]: OutputPartialSpec};
 }
 
 export function getSpecValues(specPath: string): SpecValues {
@@ -89,9 +82,14 @@ export function getSpecValues(specPath: string): SpecValues {
         }
     })();
 
-    const input: any = fileData.input;
-    if (typeof input !== "object") {
-        throw new Error("Must provide an object for inputs.");
+    const inputBase: any = fileData["input-base"];
+    if (typeof inputBase !== "object") {
+        throw new Error("Must provide an object for input bases.");
+    }
+
+    const inputConstrained: any = fileData["input-constrained"];
+    if (typeof inputConstrained !== "object") {
+        throw new Error("Must provide an object for constrained input.");
     }
 
     const output: any = fileData.output;
@@ -100,28 +98,12 @@ export function getSpecValues(specPath: string): SpecValues {
     }
 
     return {
-        name: ensureStr(fileData?.name, "name"),
-        constraints: ensureStr(fileData?.constraints, "constraints"),
-        encoding: ensureStr(fileData?.encoding, "encoding"),
+        name:            ensureStr(fileData?.name, "name"),
+        encoding:        ensureStr(fileData?.encoding, "encoding"),
+        constraintsCode: ensureStr(fileData?.constraints, "constraints"),
 
-        input: objectValueMap(input, (obj: any) => {
-            const title: string = ensureStr(obj.title, "input[].title");
-            const template: string = ensureStr(obj.template, "input[].template");
-            const substitutionsCount: number = (template.match(/%/g) || []).length;
-            const initialValues: string[] = obj.initialValues
-                .map((s: any) => ensureStr(s, "input[].initialValues[]"));
-
-            if (substitutionsCount === 0) {
-                throw new Error(`Input ${obj.title} must provide a template that includes substitution markers.`);
-            }
-
-            return {
-                title,
-                template: parseSimpleTemplate(template),
-                substitutionsCount,
-                initialValues,
-            };
-        }),
+        inputBase:        objectValueMap(inputBase, inputTransform),
+        inputConstrained: objectValueMap(inputConstrained, inputTransform),
 
         output: objectValueMap(output, (obj: any) => {
             const title: string = ensureStr(obj.title, "output[].title");
@@ -129,7 +111,6 @@ export function getSpecValues(specPath: string): SpecValues {
             if (typeof fields !== "object") {
                 throw new Error(`Output ${obj.title} must provide a fields specification object.`);
             }
-            const template: string = ensureStr(obj.template, "output[].template");
 
             const newFieldsEntries = Object.fromEntries(Object.entries(fields).map(
                 ([k, v]) => {
@@ -142,7 +123,6 @@ export function getSpecValues(specPath: string): SpecValues {
             const outputObj = {
                 title,
                 fields: newFieldsEntries,
-                template: parseSimpleTemplate(template),
             };
             validateOutputPartialSpec(outputObj);
             return outputObj;

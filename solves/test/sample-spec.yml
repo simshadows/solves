@@ -1,45 +1,51 @@
 name: graph-colouring
 
-input:
-  colours:
+input-base:
+  colour:
     title: Colours
-    template: colour(%1%).
+    params: 1
     initialValues:
       - red
       - green
       - blue
-  vertices:
+  vertex:
     title: Vertices
-    template: vertex(%1%).
+    params: 1
     initialValues:
       - v1
       - v2
       - v3
       - v4
-  edges:
+
+input-constrained:
+  edge:
     title: Edges
-    template: edge(%1%,%2%).
+    params: 2
     initialValues:
       - v1,v2
       - v2,v3
       - v3,v4
       - v4,v1
       - v1,v3
+
+constraints: |
+  domain(edge(V1, V2)) :- base(vertex, V1), base(vertex, V2), V1 != V2.
+#   % domainok(X) :- instance(X), domain(X).
+#   % #show.
+#   % #show X : instance(X), not domainok(X).
+
 output:
-  colourings:
+  color:
     title: Colourings
+    #params: 2
     fields:
       vertex: Vertex
       colour: Colour
-    template: colouring(%vertex%,%colour%)
 
-constraints: |
-  domainok(edge(V1,V2)) :- vertex(V1), vertex(V2), V1 != V2, edge(V1,V2).
-  :- edge(V1,V2), not domainok(edge(V1,V2)).
 encoding: |
-  { colouring(V,C) } :- vertex(V), colour(C).
-  coloured(V) :- colouring(V,C).
-  :- vertex(V), not coloured(V).
-  :- colouring(V,C1), colouring(V,C2), C1 != C2.
-  :- edge(V1, V2), colouring(V1, C), colouring(V2, C).
+  { solution(color(V,C)) } :- base(vertex, V), base(colour, C).
+  coloured(V) :- solution(color(V,C)).
+  :- base(vertex, V), not coloured(V).
+  :- solution(color(V,C1)), solution(color(V,C2)), C1 != C2.
+  :- instance(edge(V1, V2)), solution(color(V1, C)), solution(color(V2, C)).
 
