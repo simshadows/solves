@@ -13,5 +13,9 @@ const cliArgs = getCLIArgs();
 const specValues = getSpecValues(cliArgs.specFilePath);
 console.log(specValues);
 
-generateSource(specValues, cliArgs);
+generateSource(specValues, cliArgs)
+    .then()
+    .catch(err => {
+        console.log(err);
+    });
 

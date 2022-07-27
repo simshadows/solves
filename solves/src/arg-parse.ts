@@ -19,9 +19,12 @@ function ensureStr(obj: any, argName: string): string {
 /********************************************************************/
 
 export interface ArgValues {
-    specFilePath:        string;
-    sourceOutputDirPath: string;
-    appOutputDirPath:    string;
+    specFilePath:         string;
+    sourceOutputDirPath:  string;
+    appOutputDirPath:     string;
+
+    allowOverwriteOutput: boolean;
+    startDevServer:       boolean;
 }
 
 const program = new Command();
@@ -46,6 +49,16 @@ program.option(
     "../../generated-web-app", // TODO: How to make this relative to invocation?
 );
 
+program.option(
+    "-f, --force",
+    "Allows overwriting of output directories (--source-out and --app-out).",
+);
+
+program.option(
+    "--start-dev-server",
+    "Instead of emitting a generated static web app (via. -o/--app-out), start the Webpack dev server. Using --start-dev-server will cause -o/--app-out to be ignored.",
+);
+
 program.parse();
 
 const rawOptions = program.opts();
@@ -54,6 +67,9 @@ const typedOptions: ArgValues = {
     specFilePath: path.join(cwd, ensureStr(rawOptions["spec"], "spec")),
     sourceOutputDirPath: path.join(cwd, ensureStr(rawOptions["sourceOut"], "source-out")),
     appOutputDirPath: path.join(cwd, ensureStr(rawOptions["appOut"], "app-out")),
+
+    allowOverwriteOutput: (rawOptions["force"] === true),
+    startDevServer: (rawOptions["startDevServer"] === true),
 };
 
 // Some really crude validation for this prototype, for safety
