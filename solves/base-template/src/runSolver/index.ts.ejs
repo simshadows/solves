@@ -20,6 +20,7 @@ function mergeIndexLists(a: number[], b: number[]): number[] {
 interface GeneratedClingoFacts {
     clingoFacts:      string[];
     invalidConstants: number[];
+    invalidFacts:     Set<string>;
 }
 
 function generateClingoFacts(
@@ -31,23 +32,27 @@ function generateClingoFacts(
     console.assert(name.match(reConstant));
     const clingoFacts: string[] = [];
     const invalidPairs: number[] = [];
+    const invalidFacts: Set<string> = new Set();
     for (const [i, part] of constantTuples.entries()) {
         const substrs: string[] = part.split(",").map(s => s.trim());
         
         const isCorrectTupleSize = (substrs.length === expectedTupleSize);
         const allConstantsAreCorrectSyntax = substrs.every(x => x.match(reConstant));
 
+        const clingFact = lineGenFn(name, substrs.join(","));
         if (isCorrectTupleSize && allConstantsAreCorrectSyntax) {
-            clingoFacts.push(lineGenFn(name, substrs.join(",")));
+            clingoFacts.push(clingFact);
         } else {
             // Placeholder string added to preserve index correspondence
             clingoFacts.push("");
             invalidPairs.push(i);
+            invalidFacts.add(clingFact);
         }
     }
     return {
         clingoFacts: clingoFacts,
         invalidConstants: invalidPairs,
+        invalidFacts: invalidFacts,
     };
 }
 
@@ -78,13 +83,12 @@ function generateInstanceDef(
 }
 
 async function getInvalidEdgeFacts(
-    requiredFacts: string,
+    problemInstance: string,
     edgeFacts: string[],
 ): Promise<number[]> {
     // Use Clingo to get all invalid facts
     const fullQuery = [
-        requiredFacts,
-        edgeFacts.join("\n"),
+        problemInstance,
         validationSpecStr,
     ].join("\n\n");
     const result = await runClingo(fullQuery);
@@ -140,53 +144,47 @@ export interface SolverResult {
 
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
-<%-
-    Object.entries(inputBase).map(([k, v]) => {
-        const x = {};
-        x.id = k;
-        x.tupleSize = v.parameters;
-        return ht.runSolverStep1a(x);
-    }).join("")
--%>
-<%-
-    Object.entries(inputConstrained).map(([k, v]) => {
-        const x = {};
-        x.id = k;
-        x.tupleSize = v.parameters;
-        return ht.runSolverStep1b(x);
-    }).join("")
--%>
 
-    const baseFacts = [
+    const facts: {[K in string]: GeneratedClingoFacts} = {
 <%-
         Object.entries(inputBase).map(([k, v]) => {
             const x = {};
             x.id = k;
-            return ht.runSolverStep2(x);
+            x.tupleSize = v.parameters;
+            return ht.runSolverStep1a(x);
         }).join("")
 -%>
-    ].join("\n\n");
+<%-
+        Object.entries(inputConstrained).map(([k, v]) => {
+            const x = {};
+            x.id = k;
+            x.tupleSize = v.parameters;
+            return ht.runSolverStep1b(x);
+        }).join("")
+-%>
+    };
+
+    const problemInstance: string = Object.values(facts)
+        .map(x => x.clingoFacts.join("\n"))
+        .join("\n");
 
     const invalidEdgeFactIndices: number[] = await getInvalidEdgeFacts(
-        baseFacts,
-        edgeFacts.clingoFacts,
+        problemInstance,
+        (facts["edge"] as GeneratedClingoFacts).clingoFacts, // TODO: Remove assert
     );
 
     const totalInvalidEdgeFacts: number[] = mergeIndexLists(
-        edgeFacts.invalidConstants,
+        (facts["edge"] as GeneratedClingoFacts).invalidConstants, // TODO: Remove assert
         invalidEdgeFactIndices,
     );
 
     const resultObj: null | ClingoResult = await (async()=>{
-        const inputsValid = (colourFacts.invalidConstants.length == 0)
-                            && (vertexFacts.invalidConstants.length == 0)
-                            && (edgeFacts.invalidConstants.length == 0)
+        const inputsValid = Object.values(facts).every(x => (x.invalidFacts.size === 0))
                             && (invalidEdgeFactIndices.length === 0);
 
         if (inputsValid) {
             const fullQuery = [
-                baseFacts,
-                edgeFacts.clingoFacts.join("\n"),
+                problemInstance,
                 logicSpecStr,
             ].join("\n\n");
             return runClingo(fullQuery);
@@ -198,8 +196,8 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     return {
         resultObj: resultObj,
         invalidInputs: {
-            colour:  colourFacts.invalidConstants,
-            vertex:  vertexFacts.invalidConstants,
+            colour:  (facts["colour"] as GeneratedClingoFacts).invalidConstants, // TODO: Remove assert
+            vertex:  (facts["vertex"] as GeneratedClingoFacts).invalidConstants, // TODO: Remove assert
             edge:    totalInvalidEdgeFacts,
         },
     };
