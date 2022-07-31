@@ -1,2 +1,16 @@
 /dist
 
+########################################################
+# Package Manager Files                                #
+# (Very handy for quickly generating and testing code) #
+########################################################
+
+/base-template/.yarn
+/base-template/.pnp.cjs
+/base-template/.pnp.loader.mjs
+/base-template/.yarnrc.yml
+
+# I need to override the actual yarn.lock file, so I rename the actual file
+# and keep the file I'm using unstaged
+/base-template/yarn.lock*
+

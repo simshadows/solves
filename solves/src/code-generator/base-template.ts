@@ -41,6 +41,7 @@ export function copyDirAndApplyTemplate(
     const retypedSubstitutions: {[key: string]: any} = Object.fromEntries(
         Object.entries(substitutions),
     );
+
     _copyDirAndApplyTemplate(src, dst, retypedSubstitutions);
     copyWorkspaces(dst);
 }
@@ -88,7 +89,6 @@ function _copyDirAndApplyTemplate(
             const modifiedSubstitutions = {...substitutions, ...templatesHelperAPI};
             const ht = helperTemplates.get(nameWithoutExt + HELPERS_EXTENSION);
             if (ht !== undefined) modifiedSubstitutions["ht"] = ht;
-            console.log(modifiedSubstitutions);
             try {
                 fs.writeFileSync(modifiedDST, ejs.render(fileData, modifiedSubstitutions));
             } catch (err) {
