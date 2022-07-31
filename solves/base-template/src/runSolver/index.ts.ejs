@@ -81,16 +81,28 @@ async function getInvalidEdgeFacts(
     requiredFacts: string,
     edgeFacts: string[],
 ): Promise<number[]> {
+    // Use Clingo to get all invalid facts
+    const fullQuery = [
+        requiredFacts,
+        edgeFacts.join("\n"),
+        validationSpecStr,
+    ].join("\n\n");
+    const result = await runClingo(fullQuery);
 
+    if (result.solution === null) {
+        throw new Error("runClingo() returned a null solution.");
+    }
+
+    // Create a set of invalid facts as strings, with whitespace removed
+    const op = (x: string) => (x.replaceAll(/\s/g, "") + ".");
+    const invalidEdgeFacts: Set<string> = new Set(result.solution.map(op));
+    console.log(invalidEdgeFacts);
+    
+    // TODO: Refactor to something nicer than a loop.
     const invalidIndices: number[] = [];
     for (const [i, edgeFact] of edgeFacts.entries()) {
-        const fullQuery = [
-            requiredFacts,
-            edgeFact,
-            validationSpecStr,
-        ].join("\n\n");
-        const result = await runClingo(fullQuery);
-        if (result.result !== "SATISFIABLE") {
+        console.log(edgeFact.replaceAll(/\s/g, ""));
+        if (invalidEdgeFacts.has(edgeFact.replaceAll(/\s/g, ""))) {
             invalidIndices.push(i);
         }
     }
