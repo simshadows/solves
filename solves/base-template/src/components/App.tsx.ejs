@@ -1,22 +1,21 @@
 import React from "react";
 
-import "./App.css";
-
 import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";
 import {ResultDisplay} from "./ResultDisplay";
 
 import {
-    type ClingoResult,
-    runSolver
+    type ParsedSolution,
+    runSolver,
 } from "../runSolver";
+
+import "./App.css";
+
 
 function parseInput(s: string): string[] {
     return s.split("\n");
 }
 
 interface State {
-    initialized: boolean;
-
 <%-
         Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
             const x = {};
@@ -25,7 +24,7 @@ interface State {
         }).join("")
 -%>
 
-    outputResult: null | ClingoResult;
+    solution: ParsedSolution | "not-initialized";
     invalidInputs: Map<AllInputKeys, Set<string>>;
 }
 
@@ -33,8 +32,6 @@ export class App extends React.Component<{}, State> {
     constructor(props: {}) {
         super(props);
         this.state = {
-            initialized: false,
-
             // TODO: This is NOT the source of truth for input values. This input
             //       value state should technically no longer exist, and we should
             //       instead set up refs to read directly from their uncontrolled
@@ -53,7 +50,7 @@ export class App extends React.Component<{}, State> {
             }).join("")
 -%>
 
-            outputResult: null,
+            solution: "not-initialized",
             invalidInputs: new Map(),
         };
     }
@@ -68,8 +65,7 @@ export class App extends React.Component<{}, State> {
 %>
         });
         this.setState({
-            initialized:   true,
-            outputResult:  result.resultObj,
+            solution:      result.solution,
             invalidInputs: result.invalidConstantTuples,
         });
     }
@@ -101,8 +97,12 @@ export class App extends React.Component<{}, State> {
 -%>
             <div className="output-table-wrapper">
                 <ResultDisplay
-                    clingoResult={this.state.outputResult}
-                    initialized={this.state.initialized}
+                    fieldLabels={["Vertex", "Colour"]}
+                    solutionData={
+                        (typeof this.state.solution === "string")
+                        ? this.state.solution
+                        : this.state.solution.color
+                    }
                 />
             </div>
         </div>;

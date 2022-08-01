@@ -1,12 +1,19 @@
 import {
-    type ClingoResult as _ClingoResult,
+    type ClingoResult,
     runClingo,
 } from "clingo-wrapper";
+
+import {
+    type ParsedSolutionSpecialCode as _ParsedSolutionSpecialCode,
+    type ParsedSolution as _ParsedSolution,
+    parseSolution,
+} from "./parseSolution";
 
 import logicSpecStr from "./logicSpec.lp";
 import validationSpecStr from "./validationSpec.lp";
 
-export type ClingoResult = _ClingoResult;
+export type ParsedSolutionSpecialCode = _ParsedSolutionSpecialCode;
+export type ParsedSolution = _ParsedSolution;
 
 const reConstant = /^[a-z][a-zA-Z0-9]*$/;
 
@@ -122,9 +129,7 @@ export interface SolverParameters {
 }
 
 export interface SolverResult {
-    // Clingo-specific output.
-    // TODO: Make SolverResult backend-agnostic!
-    resultObj: null | ClingoResult;
+    solution: ParsedSolution;
     invalidConstantTuples: Map<AllInputKeys, Set<string>>;
 }
 
@@ -182,6 +187,9 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
             return [inputID, constTups];
         }),
     );
-    return {resultObj, invalidConstantTuples};
+    return {
+        solution: resultObj ? parseSolution(resultObj) : "invalid-input",
+        invalidConstantTuples,
+    };
 }
 

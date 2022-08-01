@@ -1,0 +1,49 @@
+import {
+    type ClingoResult,
+} from "clingo-wrapper";
+
+
+export interface SatisfiableParsedSolution {
+    //[K of OutputKeys]: string[][]; // Table of constants
+    color: string[][]; // Table of constants
+}
+
+export type ParsedSolutionSpecialCode = "no-solution"
+    | "invalid-input"
+    | "error";
+
+export type ParsedSolution = SatisfiableParsedSolution | ParsedSolutionSpecialCode;
+
+const solutionRE = /solution\(color\(([^,]+),([^,]+)*\)\)/g;
+
+function parseSolutionStr(s: string): string[] {
+    const matches = [...s.matchAll(solutionRE)];
+    if (matches.length !== 1) return [];
+    const match = matches[0];
+    if (match?.length !== 3) return [];
+    return [
+        match?.[1] || "<INVALID>",
+        match?.[2] || "<INVALID>",
+    ];
+}
+
+export function parseSolution(result: ClingoResult): ParsedSolution {
+    switch (result.result) {
+        case "UNSATISFIABLE":
+            return "no-solution";
+        case "UNKNOWN":
+            return "error";
+        default: console.error("Invalid value."); // Fallthrough
+        case "SATISFIABLE": // Fallthrough
+    }
+
+    if (result.solution === null) {
+        console.error("Expected non-null solution from Clingo.");
+        return "error";
+    }
+    
+    return {
+        color: result.solution.map(parseSolutionStr).filter(x => x.length),
+    };
+}
+

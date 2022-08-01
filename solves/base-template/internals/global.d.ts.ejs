@@ -48,3 +48,9 @@ type ConstrainedInputKeys = <%-
 -%>;
 type AllInputKeys = BaseInputKeys | ConstrainedInputKeys;
 
+type OutputKeys = <%-
+        Object.entries(output).map(([k, v]) =>
+            `"${k}"`
+        ).join(" | ")
+-%>;
+
