@@ -1,8 +1,10 @@
             <div className="text-input-wrapper">
                 <LineHighlighterTextbox
                     label="<%- title %>"
-                    initialValue={this.state.<%- stateValue %>}
-                    errorLineNumbers={this.state.invalidInputLines.<%- stateValidation %>}
-                    onChange={<%- onChangeFnName %>}
+                    initialValue={this.state.input<%- upperCaseFirst(inputID) %>}
+                    invalidLines={
+                        this.state.invalidInputs.get("<%- inputID %>") || new Set()
+                    }
+                    onChange={set<%- upperCaseFirst(inputID) %>}
                 />
             </div>

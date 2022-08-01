@@ -19,10 +19,10 @@ import "codemirror/lib/codemirror.css";
 import "./index.css";
 
 interface Props {
-    label:            string;
-    initialValue:     string;
-    errorLineNumbers: number[];
-    onChange:         (event: {target: {value: string;};}) => Promise<void>;
+    label:        string;
+    initialValue: string;
+    invalidLines: Set<string>;
+    onChange:     (event: {target: {value: string;};}) => Promise<void>;
 }
 
 interface State {
@@ -99,8 +99,10 @@ export class LineHighlighterTextbox extends React.Component<Props, State> {
             return;
         }
 
-        for (const line of this.props.errorLineNumbers) {
-            this.cmInstance.addLineClass(line, "wrap", "cm-invalid-line");
+        for (const [i, line] of this.getValue().split("\n").entries()) {
+            if (this.props.invalidLines.has(line.trim())) {
+                this.cmInstance.addLineClass(i, "wrap", "cm-invalid-line");
+            }
         }
     }
 

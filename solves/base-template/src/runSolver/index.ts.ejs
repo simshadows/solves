@@ -8,23 +8,14 @@ import validationSpecStr from "./validationSpec.lp";
 
 export type ClingoResult = _ClingoResult;
 
-type BaseInputKeys = "colour" | "vertex";
-type ConstrainedInputKeys = "edge";
-//type AllInputKeys = BaseInputKeys | ConstrainedInputKeys;
-
 const reConstant = /^[a-z][a-zA-Z0-9]*$/;
-
-function mergeIndexLists(a: number[], b: number[]): number[] {
-    const indexSet: Set<number> = new Set<number>(a.concat(b));
-    return Array.from(indexSet);
-}
 
 /*** ***/
 
 interface GeneratedClingoFacts {
     clingoFacts:      ReadonlyMap<string, string>; // Map<clingo fact, constant tuple>
     invalidConstants: number[];
-    invalidConstantTuples: ReadonlySet<string>;
+    invalidConstantTuples: Set<string>;
 }
 
 function generateClingoFacts(
@@ -118,36 +109,6 @@ async function getConstantTuplesThatFailConstraints(
     return ret;
 }
 
-// TODO: Delete this
-async function getInvalidEdgeFacts(
-    problemInstance: string,
-    edgeFacts: string[],
-): Promise<number[]> {
-    // Use Clingo to get all invalid facts
-    const fullQuery = [
-        problemInstance,
-        validationSpecStr,
-    ].join("\n\n");
-    const result = await runClingo(fullQuery);
-
-    if (result.solution === null) {
-        throw new Error("runClingo() returned a null solution.");
-    }
-
-    // Create a set of invalid facts as strings, with whitespace removed
-    const op = (x: string) => (x.replaceAll(/\s/g, "") + ".");
-    const invalidEdgeFacts: Set<string> = new Set(result.solution.map(op));
-    
-    // TODO: Refactor to something nicer than a loop.
-    const invalidIndices: number[] = [];
-    for (const [i, edgeFact] of edgeFacts.entries()) {
-        if (invalidEdgeFacts.has(edgeFact.replaceAll(/\s/g, ""))) {
-            invalidIndices.push(i);
-        }
-    }
-    return invalidIndices;
-}
-
 /*** ***/
 
 export interface SolverParameters {
@@ -164,17 +125,7 @@ export interface SolverResult {
     // Clingo-specific output.
     // TODO: Make SolverResult backend-agnostic!
     resultObj: null | ClingoResult;
-    invalidInputs: {
-        // These are lists of integers, where each integer is an index of
-        // an invalid string within the corresponding input list.
-<%-
-        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
-            const x = {};
-            x.inputID = k;
-            return ht.resultType(x);
-        }).join("")
--%>
-    };
+    invalidConstantTuples: Map<AllInputKeys, Set<string>>;
 }
 
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
@@ -195,36 +146,22 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
 %>
     ]);
 
-    const tmpColourFacts = baseFacts.get("colour");
-    const tmpVertexFacts = baseFacts.get("vertex");
-    const tmpEdgeFacts = constrainedFacts.get("edge");
-    if (tmpColourFacts === undefined) throw "temporary1";
-    if (tmpVertexFacts === undefined) throw "temporary2";
-    if (tmpEdgeFacts === undefined) throw "temporary3";
-
     const problemInstance: string = [...baseFacts, ...constrainedFacts]
         .map(([_, v]) => [...v.clingoFacts.keys()].join("\n"))
         .join("\n");
 
-    console.log(await getConstantTuplesThatFailConstraints(
-        problemInstance,
-        constrainedFacts,
-    ));
-
-    const invalidEdgeFactIndices: number[] = await getInvalidEdgeFacts(
-        problemInstance,
-        [...tmpEdgeFacts.clingoFacts.keys()],
-    );
-
-    const totalInvalidEdgeFacts: number[] = mergeIndexLists(
-        tmpEdgeFacts.invalidConstants,
-        invalidEdgeFactIndices,
+    const constTupConstraintFailures: Map<AllInputKeys, Set<string>> = (
+        await getConstantTuplesThatFailConstraints(
+            problemInstance,
+            constrainedFacts,
+        )
     );
 
     const resultObj: null | ClingoResult = await (async()=>{
         const noInvalidConstantTups = [...baseFacts, ...constrainedFacts]
             .every(([_, v]) => (v.invalidConstantTuples.size === 0));
-        const validAgainstConstraints = (invalidEdgeFactIndices.length === 0);
+        const validAgainstConstraints = [...constTupConstraintFailures]
+            .every(([_, v]) => (v.size === 0));
 
         if (noInvalidConstantTups && validAgainstConstraints) {
             const fullQuery = [
@@ -237,13 +174,14 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
         }
     })();
 
-    return {
-        resultObj: resultObj,
-        invalidInputs: {
-            colour:  tmpColourFacts.invalidConstants,
-            vertex:  tmpVertexFacts.invalidConstants,
-            edge:    totalInvalidEdgeFacts,
-        },
-    };
+    const invalidConstantTuples: Map<AllInputKeys, Set<string>> = new Map(
+        [...baseFacts, ...constrainedFacts].map(([inputID, factsObj]) => {
+            const constTups = factsObj.invalidConstantTuples;
+            const s = constTupConstraintFailures.get(inputID);
+            if (s !== undefined) [...s].forEach(x => constTups.add(x));
+            return [inputID, constTups];
+        }),
+    );
+    return {resultObj, invalidConstantTuples};
 }
 

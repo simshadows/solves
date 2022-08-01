@@ -26,15 +26,7 @@ interface State {
 -%>
 
     outputResult: null | ClingoResult;
-    invalidInputLines: {
-<%-
-        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
-            const x = {};
-            x.inputID = k;
-            return ht.stateTypeInputValidation(x);
-        }).join("")
--%>
-    };
+    invalidInputs: Map<AllInputKeys, Set<string>>;
 }
 
 export class App extends React.Component<{}, State> {
@@ -62,33 +54,23 @@ export class App extends React.Component<{}, State> {
 -%>
 
             outputResult: null,
-            invalidInputLines: {
-<%-
-            Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
-                const x = {};
-                x.inputID = k;
-                x.initialValues = v.initialValues;
-                return ht.stateInputValidation(x);
-            }).join("")
--%>
-            },
+            invalidInputs: new Map(),
         };
     }
 
     async _recalculateOutputs() {
         const result = await runSolver({
 <%-
-        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
-            const x = {};
-            x.inputID = k;
-            return ht.resultParameter(x);
-        }).join("")
--%>
+            Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) =>
+                "            " +
+                `${k}: parseInput(this.state.input${upperCaseFirst(k)}),`
+            ).join("\n")
+%>
         });
         this.setState({
-            initialized:       true,
-            outputResult:      result.resultObj,
-            invalidInputLines: result.invalidInputs,
+            initialized:   true,
+            outputResult:  result.resultObj,
+            invalidInputs: result.invalidConstantTuples,
         });
     }
 
@@ -112,10 +94,8 @@ export class App extends React.Component<{}, State> {
 <%-
                 Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
                     const x = {};
+                    x.inputID = k;
                     x.title = v.title;
-                    x.stateValue = "input" + upperCaseFirst(k);
-                    x.stateValidation = k;
-                    x.onChangeFnName = "set" + upperCaseFirst(k);
                     return ht.jsxParts(x);
                 }).join("")
 -%>
