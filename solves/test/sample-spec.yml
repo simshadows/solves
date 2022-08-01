@@ -34,10 +34,9 @@ constraints: |
 output:
   color:
     title: Colourings
-    #params: 2
-    fields:
-      vertex: Vertex
-      colour: Colour
+    fieldLabels:
+      - Vertex
+      - Colour
 
 encoding: |
   { solution(color(V,C)) } :- base(vertex, V), base(colour, C).

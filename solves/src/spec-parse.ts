@@ -22,17 +22,6 @@ function ensureNum(obj: any, argName: string): number {
     throw new Error(`'${argName}' spec key is not a number.`);
 }
 
-/*
- * Ensures that the field IDs match what's actually found in the template.
- * Throws human-readable exceptions if errors are found.
- */
-function validateOutputPartialSpec(o: OutputPartialSpec): void {
-    const fields: Set<string> = new Set(Object.keys(o.fields));
-    console.assert(fields.size === Object.keys(o.fields).length);
-
-    // TODO: Length of fields?
-}
-
 function inputTransform(obj: any) {
     // TODO: Simplify this later.
     const title: string = ensureStr(obj.title, "input[].title");
@@ -48,6 +37,9 @@ function inputTransform(obj: any) {
 
 /********************************************************************/
 
+interface OutputFieldSpec {
+    label: string;
+}
 
 interface InputPartialSpec {
     title: string;
@@ -57,9 +49,7 @@ interface InputPartialSpec {
 
 interface OutputPartialSpec {
     title: string;
-    fields: {[key: string]: {
-        title: string;
-    }};
+    fields: OutputFieldSpec[];
 }
 
 export interface SpecValues {
@@ -107,24 +97,16 @@ export function getSpecValues(specPath: string): SpecValues {
 
         output: objectValueMap(output, (obj: any) => {
             const title: string = ensureStr(obj.title, "output[].title");
-            const fields: any = obj.fields;
-            if (typeof fields !== "object") {
-                throw new Error(`Output ${obj.title} must provide a fields specification object.`);
+            const fieldLabels: any = obj.fieldLabels;
+            if (!Array.isArray(fieldLabels)) {
+                throw new Error(`Output ${obj.title} must provide a fields specification array.`);
             }
 
-            const newFieldsEntries = Object.fromEntries(Object.entries(fields).map(
-                ([k, v]) => {
-                    const fieldKey: string = ensureStr(k, `output[].fields.${title} key`);
-                    const fieldTitle: string = ensureStr(v, `output[].fields.${title} value`);
-                    return [fieldKey, {title: fieldTitle}];
-                }
-            ));
+            const fields: OutputFieldSpec[] = fieldLabels.map(
+                x => ({label: ensureStr(x, `output[].fields[].label`)})
+            );
 
-            const outputObj = {
-                title,
-                fields: newFieldsEntries,
-            };
-            validateOutputPartialSpec(outputObj);
+            const outputObj = {title, fields};
             return outputObj;
         }),
     };
