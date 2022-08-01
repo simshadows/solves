@@ -21,6 +21,10 @@ export function lstatIfExist(p: string) {
 //    return diff;
 //}
 
+//export function setIntersection<T>(a: Set<T>, b: Set<T>): Set<T> {
+//    return new Set([...a].filter(x => b.has(x)));
+//}
+
 export function objectValueMap<InputValue, OutputValue>(
     obj: {[key: string]: InputValue},
     fn:  (v: InputValue) => OutputValue,

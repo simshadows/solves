@@ -8,6 +8,10 @@ import validationSpecStr from "./validationSpec.lp";
 
 export type ClingoResult = _ClingoResult;
 
+type BaseInputKeys = "colour" | "vertex";
+type ConstrainedInputKeys = "edge";
+//type AllInputKeys = BaseInputKeys | ConstrainedInputKeys;
+
 const reConstant = /^[a-z][a-zA-Z0-9]*$/;
 
 function mergeIndexLists(a: number[], b: number[]): number[] {
@@ -18,9 +22,9 @@ function mergeIndexLists(a: number[], b: number[]): number[] {
 /*** ***/
 
 interface GeneratedClingoFacts {
-    clingoFacts:      string[];
+    clingoFacts:      ReadonlyMap<string, string>; // Map<clingo fact, constant tuple>
     invalidConstants: number[];
-    invalidFacts:     Set<string>;
+    invalidConstantTuples: ReadonlySet<string>;
 }
 
 function generateClingoFacts(
@@ -30,29 +34,28 @@ function generateClingoFacts(
     expectedTupleSize: number,
 ): GeneratedClingoFacts {
     console.assert(name.match(reConstant));
-    const clingoFacts: string[] = [];
+    const clingoFacts: Map<string, string> = new Map();
     const invalidPairs: number[] = [];
-    const invalidFacts: Set<string> = new Set();
+    const invalidConstantTups: Set<string> = new Set();
     for (const [i, part] of constantTuples.entries()) {
         const substrs: string[] = part.split(",").map(s => s.trim());
         
         const isCorrectTupleSize = (substrs.length === expectedTupleSize);
         const allConstantsAreCorrectSyntax = substrs.every(x => x.match(reConstant));
 
-        const clingFact = lineGenFn(name, substrs.join(","));
         if (isCorrectTupleSize && allConstantsAreCorrectSyntax) {
-            clingoFacts.push(clingFact);
+            const fact: string = lineGenFn(name, substrs.join(","));
+            console.assert(fact.replaceAll(/\s/g, "") == fact); // Should be no spaces
+            clingoFacts.set(fact, part);
         } else {
-            // Placeholder string added to preserve index correspondence
-            clingoFacts.push("");
             invalidPairs.push(i);
-            invalidFacts.add(clingFact);
+            invalidConstantTups.add(part);
         }
     }
     return {
         clingoFacts: clingoFacts,
         invalidConstants: invalidPairs,
-        invalidFacts: invalidFacts,
+        invalidConstantTuples: invalidConstantTups,
     };
 }
 
@@ -82,6 +85,40 @@ function generateInstanceDef(
     );
 }
 
+async function getConstantTuplesThatFailConstraints(
+    problemInstance: string,
+    constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedClingoFacts>,
+): Promise<Map<ConstrainedInputKeys, Set<string>>> {
+    // Use Clingo to get all invalid facts
+    const fullQuery = [
+        problemInstance,
+        validationSpecStr,
+    ].join("\n\n");
+    const result = await runClingo(fullQuery);
+
+    if (result.solution === null) {
+        throw new Error("runClingo() returned a null solution.");
+    }
+
+    // Create a set of invalid facts as strings, with whitespace removed
+    const op = (x: string) => (x.replaceAll(/\s/g, "") + ".");
+    const invalidFacts: Set<string> = new Set(result.solution.map(op));
+
+    // Convert these invalid facts to constant tuples
+    const ret: Map<ConstrainedInputKeys, Set<string>> = new Map(
+        [...constrainedFacts].map(([inputID, {clingoFacts}]) => [
+            inputID,
+            new Set(
+                [...clingoFacts]
+                    .filter(([fact, _]) => invalidFacts.has(fact))
+                    .map(([_, tup]) => tup)
+            ),
+        ])
+    );
+    return ret;
+}
+
+// TODO: Delete this
 async function getInvalidEdgeFacts(
     problemInstance: string,
     edgeFacts: string[],
@@ -100,12 +137,10 @@ async function getInvalidEdgeFacts(
     // Create a set of invalid facts as strings, with whitespace removed
     const op = (x: string) => (x.replaceAll(/\s/g, "") + ".");
     const invalidEdgeFacts: Set<string> = new Set(result.solution.map(op));
-    console.log(invalidEdgeFacts);
     
     // TODO: Refactor to something nicer than a loop.
     const invalidIndices: number[] = [];
     for (const [i, edgeFact] of edgeFacts.entries()) {
-        console.log(edgeFact.replaceAll(/\s/g, ""));
         if (invalidEdgeFacts.has(edgeFact.replaceAll(/\s/g, ""))) {
             invalidIndices.push(i);
         }
@@ -145,44 +180,53 @@ export interface SolverResult {
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
 
-    const facts: {[K in string]: GeneratedClingoFacts} = {
+    const baseFacts: ReadonlyMap<BaseInputKeys, GeneratedClingoFacts> = new Map([
 <%-
-        Object.entries(inputBase).map(([k, v]) => {
-            const x = {};
-            x.id = k;
-            x.tupleSize = v.parameters;
-            return ht.runSolverStep1a(x);
-        }).join("")
--%>
+        Object.entries(inputBase).map(([k, v]) => "        " +
+            `["${k}", generateBaseDef(params.${k}, "${k}", ${v.parameters})],`
+        ).join("\n")
+%>
+    ]);
+    const constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedClingoFacts> = new Map([
 <%-
-        Object.entries(inputConstrained).map(([k, v]) => {
-            const x = {};
-            x.id = k;
-            x.tupleSize = v.parameters;
-            return ht.runSolverStep1b(x);
-        }).join("")
--%>
-    };
+        Object.entries(inputConstrained).map(([k, v]) => "        " +
+            `["${k}", generateInstanceDef(params.${k}, "${k}", ${v.parameters})],`
+        ).join("\n")
+%>
+    ]);
 
-    const problemInstance: string = Object.values(facts)
-        .map(x => x.clingoFacts.join("\n"))
+    const tmpColourFacts = baseFacts.get("colour");
+    const tmpVertexFacts = baseFacts.get("vertex");
+    const tmpEdgeFacts = constrainedFacts.get("edge");
+    if (tmpColourFacts === undefined) throw "temporary1";
+    if (tmpVertexFacts === undefined) throw "temporary2";
+    if (tmpEdgeFacts === undefined) throw "temporary3";
+
+    const problemInstance: string = [...baseFacts, ...constrainedFacts]
+        .map(([_, v]) => [...v.clingoFacts.keys()].join("\n"))
         .join("\n");
+
+    console.log(await getConstantTuplesThatFailConstraints(
+        problemInstance,
+        constrainedFacts,
+    ));
 
     const invalidEdgeFactIndices: number[] = await getInvalidEdgeFacts(
         problemInstance,
-        (facts["edge"] as GeneratedClingoFacts).clingoFacts, // TODO: Remove assert
+        [...tmpEdgeFacts.clingoFacts.keys()],
     );
 
     const totalInvalidEdgeFacts: number[] = mergeIndexLists(
-        (facts["edge"] as GeneratedClingoFacts).invalidConstants, // TODO: Remove assert
+        tmpEdgeFacts.invalidConstants,
         invalidEdgeFactIndices,
     );
 
     const resultObj: null | ClingoResult = await (async()=>{
-        const inputsValid = Object.values(facts).every(x => (x.invalidFacts.size === 0))
-                            && (invalidEdgeFactIndices.length === 0);
+        const noInvalidConstantTups = [...baseFacts, ...constrainedFacts]
+            .every(([_, v]) => (v.invalidConstantTuples.size === 0));
+        const validAgainstConstraints = (invalidEdgeFactIndices.length === 0);
 
-        if (inputsValid) {
+        if (noInvalidConstantTups && validAgainstConstraints) {
             const fullQuery = [
                 problemInstance,
                 logicSpecStr,
@@ -196,8 +240,8 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     return {
         resultObj: resultObj,
         invalidInputs: {
-            colour:  (facts["colour"] as GeneratedClingoFacts).invalidConstants, // TODO: Remove assert
-            vertex:  (facts["vertex"] as GeneratedClingoFacts).invalidConstants, // TODO: Remove assert
+            colour:  tmpColourFacts.invalidConstants,
+            vertex:  tmpVertexFacts.invalidConstants,
             edge:    totalInvalidEdgeFacts,
         },
     };
