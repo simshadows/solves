@@ -11,7 +11,7 @@ export type ParsedSolutionSpecialCode = "no-solution"
 export type ParsedSolution = SatisfiableParsedSolution | ParsedSolutionSpecialCode;
 
 function solutionPartialRE(name: string) {
-    return `solution\\(${name}\\(([^,]+)(?:,([^,]+))*\\)\\)`;
+    return `solution\\(${name}\\((.+)\\)\\)`;
 }
 
 function parseSolutionStr(s: string, name: string): string[] {
@@ -20,7 +20,11 @@ function parseSolutionStr(s: string, name: string): string[] {
     const matches = [...s.matchAll(reSolution)];
     console.log(matches);
     console.assert(matches.length <= 1); // Never have more than one match
-    return matches[0]?.slice(1) || []; // First match, with first element removed
+    const match = matches[0];
+    if (match === undefined) return [];
+    const group = match[1];
+    if (group === undefined) throw new Error("One capture group expected.");
+    return group.split(",").map(x => x.trim());
 }
 
 export function parseSolution(result: ClingoResult): ParsedSolution {
