@@ -27,6 +27,8 @@ output:
     title: Assignment
     fieldLabels:
       - Variable
+      - Dummy1
+      - Dummy2
 
 constraints: |
   sign(pos).
@@ -36,10 +38,10 @@ constraints: |
   domainok(clause(C,V,S)) :- base(clausename,C), base(variable,V), sign(S).
 
 encoding: |
-  { assignT(V) } :- base(variable,V).
-  satisfied(C) :- instance(clause(C,V,pos)), assignT(V).
-  satisfied(C) :- instance(clause(C,V,neg)), not assignT(V).
+  { assignT(V,dummy1,dummy2) } :- base(variable,V).
+  satisfied(C) :- instance(clause(C,V,pos)), assignT(V,dummy1,dummy2).
+  satisfied(C) :- instance(clause(C,V,neg)), not assignT(V,dummy1,dummy2).
   :- base(clausename,C), not satisfied(C).
 
-  solution(assignT(V)) :- assignT(V).
+  solution(assignT(V,dummy1,dummy2)) :- assignT(V,dummy1,dummy2).
 

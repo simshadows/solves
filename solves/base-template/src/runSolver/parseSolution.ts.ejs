@@ -1,11 +1,7 @@
-import {
-    type ClingoResult,
-} from "clingo-wrapper";
+import {type ClingoResult} from "clingo-wrapper";
 
-
-export interface SatisfiableParsedSolution {
-    //[K of OutputKeys]: string[][]; // Table of constants
-    color: string[][]; // Table of constants
+export type SatisfiableParsedSolution = {
+    [K in OutputKeys]: string[][]; // Table of constants
 }
 
 export type ParsedSolutionSpecialCode = "no-solution"
@@ -14,17 +10,17 @@ export type ParsedSolutionSpecialCode = "no-solution"
 
 export type ParsedSolution = SatisfiableParsedSolution | ParsedSolutionSpecialCode;
 
-const solutionRE = /solution\(color\(([^,]+),([^,]+)*\)\)/g;
+function solutionPartialRE(name: string) {
+    return `solution\\(${name}\\(([^,]+)(?:,([^,]+))*\\)\\)`;
+}
 
-function parseSolutionStr(s: string): string[] {
-    const matches = [...s.matchAll(solutionRE)];
-    if (matches.length !== 1) return [];
-    const match = matches[0];
-    if (match?.length !== 3) return [];
-    return [
-        match?.[1] || "<INVALID>",
-        match?.[2] || "<INVALID>",
-    ];
+function parseSolutionStr(s: string, name: string): string[] {
+    console.log(s);
+    const reSolution = new RegExp(`^${solutionPartialRE(name)}$`, "g");
+    const matches = [...s.matchAll(reSolution)];
+    console.log(matches);
+    console.assert(matches.length <= 1); // Never have more than one match
+    return matches[0]?.slice(1) || []; // First match, with first element removed
 }
 
 export function parseSolution(result: ClingoResult): ParsedSolution {
@@ -37,13 +33,24 @@ export function parseSolution(result: ClingoResult): ParsedSolution {
         case "SATISFIABLE": // Fallthrough
     }
 
-    if (result.solution === null) {
+    const solution = result.solution;
+    if (solution === null) {
         console.error("Expected non-null solution from Clingo.");
         return "error";
     }
     
+    const op = (name: string) => (
+        solution
+            .map(x => parseSolutionStr(x, name))
+            .filter(x => x.length)
+    );
+
     return {
-        color: result.solution.map(parseSolutionStr).filter(x => x.length),
+<%-
+        Object.entries(output).map(([k, v]) => "        " +
+            `${k}: op("${k}"),`
+        ).join("\n")
+%>
     };
 }
 

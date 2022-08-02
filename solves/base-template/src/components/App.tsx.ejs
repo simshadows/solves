@@ -92,19 +92,17 @@ export class App extends React.Component<{}, State> {
                     const x = {};
                     x.inputID = k;
                     x.title = v.title;
-                    return ht.jsxParts(x);
+                    return ht.jsxInputComponent(x);
                 }).join("")
 -%>
-            <div className="output-table-wrapper">
-                <ResultDisplay
-                    fieldLabels={["Vertex", "Colour"]}
-                    solutionData={
-                        (typeof this.state.solution === "string")
-                        ? this.state.solution
-                        : this.state.solution.color
-                    }
-                />
-            </div>
+<%-
+                Object.entries(output).map(([k, v]) => {
+                    const x = {};
+                    x.outputID = k;
+                    x.fieldLabels = v.fields.map(y => y.label);
+                    return ht.jsxOutputComponent(x);
+                }).join("")
+-%>
         </div>;
     }
 }

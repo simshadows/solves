@@ -9,13 +9,13 @@ import {
     parseSolution,
 } from "./parseSolution";
 
+import {reConstant} from "../utils";
+
 import logicSpecStr from "./logicSpec.lp";
 import validationSpecStr from "./validationSpec.lp";
 
 export type ParsedSolutionSpecialCode = _ParsedSolutionSpecialCode;
 export type ParsedSolution = _ParsedSolution;
-
-const reConstant = /^[a-z][a-zA-Z0-9]*$/;
 
 /*** ***/
 
@@ -92,6 +92,7 @@ async function getConstantTuplesThatFailConstraints(
         problemInstance,
         validationSpecStr,
     ].join("\n\n");
+    console.log(fullQuery);
     const result = await runClingo(fullQuery);
 
     if (result.solution === null) {

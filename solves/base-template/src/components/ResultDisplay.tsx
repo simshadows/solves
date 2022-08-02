@@ -35,7 +35,6 @@ export function ResultDisplay(props: Props) {
         return <>There is a solution, but it has no values.</>;
     }
 
-    console.log(props.solutionData);
     return <table className="result-satisfiable">
         <thead>
             <tr key={0}>

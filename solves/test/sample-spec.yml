@@ -28,15 +28,15 @@ input-constrained:
       - v4,v1
       - v1,v3
 
-constraints: |
-  domainok(edge(V1,V2)) :- base(vertex,V1), base(vertex,V2), V1 != V2, instance(edge(V1,V2)).
-
 output:
   color:
     title: Colourings
     fieldLabels:
       - Vertex
       - Colour
+
+constraints: |
+  domainok(edge(V1,V2)) :- base(vertex,V1), base(vertex,V2), V1 != V2, instance(edge(V1,V2)).
 
 encoding: |
   { solution(color(V,C)) } :- base(vertex, V), base(colour, C).
