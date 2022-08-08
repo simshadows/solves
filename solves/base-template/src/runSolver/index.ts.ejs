@@ -121,7 +121,7 @@ async function getConstantTuplesThatFailConstraints(
 
 export interface SolverParameters {
 <%-
-        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
+        Object.entries(allInputs).map(([k, v]) => {
             const x = {};
             x.inputID = k;
             return ht.paramType(x);

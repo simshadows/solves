@@ -17,12 +17,15 @@ function parseInput(s: string): string[] {
 
 interface State {
 <%-
-        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
-            const x = {};
-            x.inputID = k;
-            return ht.stateTypeInputValue(x);
-        }).join("")
--%>
+        Object.entries(allTextInputs).map(([k, v]) => "    " +
+            `input${upperCaseFirst(k)}: string;`
+        ).join("\n")
+%>
+<%-
+        Object.entries(allNumericInputs).map(([k, v]) => "    " +
+            `input${upperCaseFirst(k)}: number;`
+        ).join("\n")
+%>
 
     solution: ParsedSolution | "not-initialized";
     invalidInputs: Map<AllInputKeys, Set<string>>;
@@ -42,13 +45,15 @@ export class App extends React.Component<{}, State> {
             //       component, or improve LineHighlighterTextbox into a
             //       controllable component!
 <%-
-            Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
-                const x = {};
-                x.inputID = k;
-                x.initialValues = v.initialValues;
-                return ht.stateInputValue(x);
-            }).join("")
--%>
+            Object.entries(allTextInputs).map(([k, v]) => "            " +
+                `input${upperCaseFirst(k)}: "${v.initialValues.join("\\n")}",`
+            ).join("\n")
+%>
+<%-
+            Object.entries(allNumericInputs).map(([k, v]) => "            " +
+                `input${upperCaseFirst(k)}: 1,`
+            ).join("\n")
+%>
 
             solution: "not-initialized",
             invalidInputs: new Map(),
@@ -58,7 +63,7 @@ export class App extends React.Component<{}, State> {
     async _recalculateOutputs() {
         const result = await runSolver({
 <%-
-            Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) =>
+            Object.entries(allInputs).map(([k, v]) =>
                 "            " +
                 `${k}: parseInput(this.state.input${upperCaseFirst(k)}),`
             ).join("\n")
@@ -78,7 +83,7 @@ export class App extends React.Component<{}, State> {
         const recalcCallback = async () => this._recalculateOutputs();
 
 <%-
-        Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
+        Object.entries(allInputs).map(([k, v]) => {
             const x = {};
             x.stateValue = "input" + upperCaseFirst(k);
             x.onChangeFnName = "set" + upperCaseFirst(k);
@@ -88,7 +93,7 @@ export class App extends React.Component<{}, State> {
 
         return <div id="app">
 <%-
-                Object.entries({...inputBase, ...inputConstrained}).map(([k, v]) => {
+                Object.entries(allInputs).map(([k, v]) => {
                     const x = {};
                     x.inputID = k;
                     x.title = v.title;
