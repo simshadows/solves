@@ -1,7 +1,9 @@
             <div className="input-wrapper">
-                <LineHighlighterTextbox
+                <IntegerInput
                     label="<%- title %>"
-                    initialValue={this.state.input<%- upperCaseFirst(inputID) %>}
+                    min={<%- min %>}
+                    max={<%- max %>}
+                    value={this.state.input<%- upperCaseFirst(inputID) %>}
                     invalidLines={
                         this.state.invalidInputs.get("<%- inputID %>") || new Set()
                     }

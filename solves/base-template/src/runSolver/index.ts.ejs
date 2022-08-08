@@ -174,6 +174,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
                 problemInstance,
                 logicSpecStr,
             ].join("\n\n");
+            console.log(fullQuery);
             return runClingo(fullQuery);
         } else {
             return null;

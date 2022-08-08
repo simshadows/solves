@@ -8,13 +8,13 @@
     width: 100%;
 }
 
-.text-input-wrapper {
+.input-wrapper {
     flex: 1 0 0;
 
     min-width: 12em;
     /*border: thin solid black;*/
 }
-.text-input-wrapper > * {
+.input-wrapper > * {
     width: 100%;
 }
 

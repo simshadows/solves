@@ -1,5 +1,6 @@
 import React from "react";
 
+import {IntegerInput} from "./IntegerInput";
 import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";
 import {ResultDisplay} from "./ResultDisplay";
 
@@ -83,21 +84,39 @@ export class App extends React.Component<{}, State> {
         const recalcCallback = async () => this._recalculateOutputs();
 
 <%-
-        Object.entries(allInputs).map(([k, v]) => {
+        Object.entries(allTextInputs).map(([k, v]) => {
             const x = {};
             x.stateValue = "input" + upperCaseFirst(k);
             x.onChangeFnName = "set" + upperCaseFirst(k);
-            return ht.onChangeHelpers(x);
+            return ht.onChangeHelper(x);
+        }).join("")
+-%>
+<%-
+        Object.entries(allNumericInputs).map(([k, v]) => {
+            const x = {};
+            x.stateValue = "input" + upperCaseFirst(k);
+            x.onChangeFnName = "set" + upperCaseFirst(k);
+            return ht.onChangeHelperNumeric(x);
         }).join("")
 -%>
 
         return <div id="app">
 <%-
-                Object.entries(allInputs).map(([k, v]) => {
+                Object.entries(allTextInputs).map(([k, v]) => {
                     const x = {};
                     x.inputID = k;
                     x.title = v.title;
                     return ht.jsxInputComponent(x);
+                }).join("")
+-%>
+<%-
+                Object.entries(inputInteger).map(([k, v]) => {
+                    const x = {};
+                    x.inputID = k;
+                    x.title = v.title;
+                    x.min = v.min;
+                    x.max = v.max;
+                    return ht.jsxInputIntegerComponent(x);
                 }).join("")
 -%>
 <%-

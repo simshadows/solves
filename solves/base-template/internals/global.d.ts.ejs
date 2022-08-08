@@ -36,21 +36,32 @@ declare module '*.lp' {
  * General
  */
 
-type BaseInputKeys = <%-
-        Object.entries(inputBase).map(([k, v]) => 
-            `"${k}"`
-        ).join(" | ")
+<%-
+    (!Object.keys(inputBase).length) ? "" :
+    "type BaseInputKeys = " +
+    Object.entries(inputBase).map(([k, v]) => 
+        `"${k}"`
+    ).join(" | ")
 -%>;
-type ConstrainedInputKeys = <%-
-        Object.entries(inputConstrained).map(([k, v]) =>
-            `"${k}"`
-        ).join(" | ")
+<%-
+    (!Object.keys(inputInteger).length) ? "" :
+    "type IntegerInputKeys = " +
+    Object.entries(inputInteger).map(([k, v]) => 
+        `"${k}"`
+    ).join(" | ")
 -%>;
-type AllInputKeys = BaseInputKeys | ConstrainedInputKeys;
+<%-
+    (!Object.keys(inputConstrained).length) ? "" :
+    "type ConstrainedInputKeys = " +
+    Object.entries(inputConstrained).map(([k, v]) =>
+        `"${k}"`
+    ).join(" | ")
+-%>;
+type AllInputKeys = BaseInputKeys | IntegerInputKeys | ConstrainedInputKeys;
 
 type OutputKeys = <%-
-        Object.entries(output).map(([k, v]) =>
-            `"${k}"`
-        ).join(" | ")
+    Object.entries(output).map(([k, v]) =>
+        `"${k}"`
+    ).join(" | ")
 -%>;
 
