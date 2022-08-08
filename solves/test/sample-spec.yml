@@ -17,6 +17,8 @@ input-base:
       - v3
       - v4
 
+input-integer: {}
+
 input-constrained:
   edge:
     title: Edges

@@ -1,0 +1,45 @@
+name: vertex-cover
+
+input-base:
+  vertex:
+    title: Vertices
+    params: 1
+    initialValues:
+      - v1
+      - v2
+      - v3
+      - v4
+
+input-integer:
+  threshold:
+    title: Threshold
+    min: 1
+    max: 10
+    initial: 2
+
+input-constrained:
+  edge:
+    title: Edges
+    params: 2
+    initialValues:
+      - v1,v2
+      - v2,v3
+      - v3,v4
+      - v4,v1
+      - v1,v3
+
+output:
+  selection:
+    title: Selection
+    fieldLabels:
+      - Vertex
+
+constraints: |
+  domainok(edge(V1,V2)) :- base(vertex,V1), base(vertex,V2), V1 != V2, instance(edge(V1,V2)).
+
+encoding: |
+  { solution(selection(V)) } :- base(vertex, V).
+
+  :- instance(edge(V1, V2)), not solution(selection(V1)), not solution(selection(V2)).
+  :- integer(threshold,K), K+1 #count {V:solution(selection(V))}.
+

@@ -15,10 +15,8 @@ function solutionPartialRE(name: string) {
 }
 
 function parseSolutionStr(s: string, name: string): string[] {
-    console.log(s);
     const reSolution = new RegExp(`^${solutionPartialRE(name)}$`, "g");
     const matches = [...s.matchAll(reSolution)];
-    console.log(matches);
     console.assert(matches.length <= 1); // Never have more than one match
     const match = matches[0];
     if (match === undefined) return [];
