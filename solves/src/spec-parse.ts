@@ -49,6 +49,9 @@ function inputIntegerTransform(obj: any): InputIntegerPartialSpec {
     const min: number = ensureInt(obj.min, "input-integer[].min");
     const max: number = ensureInt(obj.max, "input-integer[].max");
     const initial: number = ensureInt(obj.initial, "input-integer[].initial");
+    if (initial < min || initial > max) {
+        throw new Error(`Initial value ${initial} falls outside range [${min},${max}].`);
+    }
     return {
         title,
         min,

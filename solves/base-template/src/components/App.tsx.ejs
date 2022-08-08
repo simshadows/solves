@@ -1,7 +1,13 @@
 import React from "react";
 
-import {IntegerInput} from "./IntegerInput";
-import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";
+<%-
+(!Object.keys(inputInteger).length) ? "" :
+`import {IntegerInput} from "./IntegerInput";\n`
+-%>
+<%-
+(!Object.keys(allTextInputs).length) ? "" :
+`import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";\n`
+-%>
 import {ResultDisplay} from "./ResultDisplay";
 
 import {
@@ -52,7 +58,7 @@ export class App extends React.Component<{}, State> {
 %>
 <%-
             Object.entries(allNumericInputs).map(([k, v]) => "            " +
-                `input${upperCaseFirst(k)}: 1,`
+                `input${upperCaseFirst(k)}: ${v.initial},`
             ).join("\n")
 %>
 
@@ -64,9 +70,15 @@ export class App extends React.Component<{}, State> {
     async _recalculateOutputs() {
         const result = await runSolver({
 <%-
-            Object.entries(allInputs).map(([k, v]) =>
+            Object.entries(allTextInputs).map(([k, v]) =>
                 "            " +
                 `${k}: parseInput(this.state.input${upperCaseFirst(k)}),`
+            ).join("\n")
+%>
+<%-
+            Object.entries(inputInteger).map(([k, v]) =>
+                "            " +
+                `${k}: this.state.input${upperCaseFirst(k)},`
             ).join("\n")
 %>
         });

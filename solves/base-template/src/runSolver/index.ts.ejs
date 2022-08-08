@@ -17,11 +17,12 @@ import validationSpecStr from "./validationSpec.lp";
 export type ParsedSolutionSpecialCode = _ParsedSolutionSpecialCode;
 export type ParsedSolution = _ParsedSolution;
 
+
 /*** ***/
 
-interface GeneratedClingoFacts {
+
+interface GeneratedFacts {
     clingoFacts:      ReadonlyMap<string, string>; // Map<clingo fact, constant tuple>
-    invalidConstants: number[];
     invalidConstantTuples: Set<string>;
 }
 
@@ -30,12 +31,11 @@ function generateClingoFacts(
     name:              string,
     lineGenFn:         (name: string, constantTuple: string) => string,
     expectedTupleSize: number,
-): GeneratedClingoFacts {
+): GeneratedFacts {
     console.assert(name.match(reConstant));
     const clingoFacts: Map<string, string> = new Map();
-    const invalidPairs: number[] = [];
     const invalidConstantTups: Set<string> = new Set();
-    for (const [i, part] of constantTuples.entries()) {
+    for (const part of constantTuples) {
         const substrs: string[] = part.split(",").map(s => s.trim());
         
         const isCorrectTupleSize = (substrs.length === expectedTupleSize);
@@ -46,22 +46,23 @@ function generateClingoFacts(
             console.assert(fact.replaceAll(/\s/g, "") == fact); // Should be no spaces
             clingoFacts.set(fact, part);
         } else {
-            invalidPairs.push(i);
             invalidConstantTups.add(part);
         }
     }
     return {
         clingoFacts: clingoFacts,
-        invalidConstants: invalidPairs,
         invalidConstantTuples: invalidConstantTups,
     };
 }
+
+/*** ***/
+
 
 function generateBaseDef(
     constants:         string[],
     name:              string,
     expectedTupleSize: number,
-): GeneratedClingoFacts {
+): GeneratedFacts {
     return generateClingoFacts(
         constants,
         name,
@@ -69,12 +70,13 @@ function generateBaseDef(
         expectedTupleSize,
     );
 }
+generateBaseDef; // TODO: Conditionally render the function definition?
 
 function generateInstanceDef(
     constants:         string[],
     name:              string,
     expectedTupleSize: number,
-): GeneratedClingoFacts {
+): GeneratedFacts {
     return generateClingoFacts(
         constants,
         name,
@@ -82,10 +84,21 @@ function generateInstanceDef(
         expectedTupleSize,
     );
 }
+generateInstanceDef; // TODO: Conditionally render the function definition?
+
+function generateIntegerDef(value: number, name: string): GeneratedFacts {
+    console.assert(Number.isSafeInteger(value));
+    console.assert(name.match(reConstant));
+    return {
+        clingoFacts: new Map([[`integer(${name},${value}).`, `${value}`]]),
+        invalidConstantTuples: new Set(),
+    };
+}
+generateIntegerDef; // TODO: Conditionally render the function definition?
 
 async function getConstantTuplesThatFailConstraints(
     problemInstance: string,
-    constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedClingoFacts>,
+    constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedFacts>,
 ): Promise<Map<ConstrainedInputKeys, Set<string>>> {
     // Use Clingo to get all invalid facts
     const fullQuery = [
@@ -121,12 +134,15 @@ async function getConstantTuplesThatFailConstraints(
 
 export interface SolverParameters {
 <%-
-        Object.entries(allInputs).map(([k, v]) => {
-            const x = {};
-            x.inputID = k;
-            return ht.paramType(x);
-        }).join("")
--%>
+    Object.entries(allTextInputs).map(([k, v]) => "    " +
+        `${k}: string[];`
+    ).join("\n")
+%>
+<%-
+    Object.entries(inputInteger).map(([k, v]) => "    " +
+        `${k}: number;`
+    ).join("\n")
+%>
 }
 
 export interface SolverResult {
@@ -137,14 +153,19 @@ export interface SolverResult {
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
 
-    const baseFacts: ReadonlyMap<BaseInputKeys, GeneratedClingoFacts> = new Map([
+    const independentFacts: ReadonlyMap<AllIndependentKeys, GeneratedFacts> = new Map([
 <%-
         Object.entries(inputBase).map(([k, v]) => "        " +
             `["${k}", generateBaseDef(params.${k}, "${k}", ${v.parameters})],`
         ).join("\n")
 %>
+<%-
+        Object.entries(inputInteger).map(([k, v]) => "        " +
+            `["${k}", generateIntegerDef(params.${k}, "${k}")],`
+        ).join("\n")
+%>
     ]);
-    const constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedClingoFacts> = new Map([
+    const constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedFacts> = new Map([
 <%-
         Object.entries(inputConstrained).map(([k, v]) => "        " +
             `["${k}", generateInstanceDef(params.${k}, "${k}", ${v.parameters})],`
@@ -152,7 +173,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
 %>
     ]);
 
-    const problemInstance: string = [...baseFacts, ...constrainedFacts]
+    const problemInstance: string = [...independentFacts, ...constrainedFacts]
         .map(([_, v]) => [...v.clingoFacts.keys()].join("\n"))
         .join("\n");
 
@@ -164,7 +185,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     );
 
     const resultObj: null | ClingoResult = await (async()=>{
-        const noInvalidConstantTups = [...baseFacts, ...constrainedFacts]
+        const noInvalidConstantTups = [...independentFacts, ...constrainedFacts]
             .every(([_, v]) => (v.invalidConstantTuples.size === 0));
         const validAgainstConstraints = [...constTupConstraintFailures]
             .every(([_, v]) => (v.size === 0));
@@ -182,7 +203,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     })();
 
     const invalidConstantTuples: Map<AllInputKeys, Set<string>> = new Map(
-        [...baseFacts, ...constrainedFacts].map(([inputID, factsObj]) => {
+        [...independentFacts, ...constrainedFacts].map(([inputID, factsObj]) => {
             const constTups = factsObj.invalidConstantTuples;
             const s = constTupConstraintFailures.get(inputID);
             if (s !== undefined) [...s].forEach(x => constTups.add(x));

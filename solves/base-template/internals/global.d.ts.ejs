@@ -42,22 +42,37 @@ declare module '*.lp' {
     Object.entries(inputBase).map(([k, v]) => 
         `"${k}"`
     ).join(" | ")
--%>;
+    + ";"
+-%>
 <%-
     (!Object.keys(inputInteger).length) ? "" :
     "type IntegerInputKeys = " +
     Object.entries(inputInteger).map(([k, v]) => 
         `"${k}"`
     ).join(" | ")
--%>;
+    + ";"
+-%>
 <%-
     (!Object.keys(inputConstrained).length) ? "" :
     "type ConstrainedInputKeys = " +
     Object.entries(inputConstrained).map(([k, v]) =>
         `"${k}"`
     ).join(" | ")
+    + ";"
+-%>
+type AllIndependentKeys = <%-
+    [
+        (!Object.keys(inputBase).length) ? null : "BaseInputKeys",
+        (!Object.keys(inputInteger).length) ? null : "IntegerInputKeys",
+    ].filter(x => x).join(" | ")
 -%>;
-type AllInputKeys = BaseInputKeys | IntegerInputKeys | ConstrainedInputKeys;
+type AllInputKeys = <%-
+    [
+        (!Object.keys(inputBase).length) && (!Object.keys(inputInteger).length)
+            ? null : "AllIndependentKeys",
+        (!Object.keys(inputConstrained).length) ? null : "ConstrainedInputKeys",
+    ].filter(x => x).join(" | ")
+-%>;
 
 type OutputKeys = <%-
     Object.entries(output).map(([k, v]) =>

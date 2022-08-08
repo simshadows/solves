@@ -31,6 +31,10 @@ function getTemplateAPI(specValues: SpecValues): {[key: string]: any} {
             //...specValues.inputInteger,
             ...specValues.inputConstrained,
         },
+        allIndependentInputs: {
+            ...specValues.inputBase,
+            ...specValues.inputInteger,
+        },
         allTextInputs: {
             ...specValues.inputBase,
             ...specValues.inputConstrained,
