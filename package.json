@@ -9,8 +9,8 @@
   "scripts": {
     "devdebug": "yarn solves -s ./test/sample-spec.yml",
     "devdebug2": "yarn solves -s ./test/cnf-sat.yml",
-    "devdebug3": "yarn solves -s ./test/cnf-sat-alt.yml",
-    "devdebug4": "yarn solves -s ./test/vertex-cover.yml",
+    "devdebug2alt": "yarn solves -s ./test/cnf-sat-alt.yml",
+    "devdebug3": "yarn solves -s ./test/vertex-cover.yml",
     "test": "yarn workspace solves test",
     "build": "yarn workspace solves build",
     "compile": "yarn workspace solves compile",

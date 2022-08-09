@@ -17,6 +17,9 @@
 
 .input-wrapper {
     flex: 1 0 0;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1em;
 
     min-width: 12em;
     /*border: thin solid black;*/

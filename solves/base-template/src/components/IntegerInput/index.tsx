@@ -1,5 +1,7 @@
 import React from "react";
 
+import "./index.css";
+
 interface Props {
     label:        string;
     min:          number;
@@ -16,7 +18,7 @@ export function IntegerInput(props: Props) {
         if (value < props.min) value = props.min;
         props.onChange(value);
     }
-    return <>
+    return <div className="integer-input">
         {props.label}
         <input
             type="range"
@@ -26,6 +28,6 @@ export function IntegerInput(props: Props) {
             onChange={onChange}
         />
         <output>{props.value}</output>
-    </>;
+    </div>;
 }
 

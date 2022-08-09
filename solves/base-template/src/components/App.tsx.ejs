@@ -6,7 +6,7 @@ import React from "react";
 -%>
 <%-
 (!Object.keys(allTextInputs).length) ? "" :
-`import {LineHighlighterTextbox} from "./generic/LineHighlighterTextbox";\n`
+`import {TextAreaInput} from "./TextAreaInput";\n`
 -%>
 import {ResultDisplay} from "./ResultDisplay";
 
@@ -124,6 +124,8 @@ export class App extends React.Component<{}, State> {
                     return ht.jsxInputComponent(x);
                 }).join("")
 -%>
+<%_ if (Object.keys(inputInteger).length) { -%>
+            <div className="input-wrapper">
 <%-
                 Object.entries(inputInteger).map(([k, v]) => {
                     const x = {};
@@ -134,6 +136,8 @@ export class App extends React.Component<{}, State> {
                     return ht.jsxInputIntegerComponent(x);
                 }).join("")
 -%>
+            </div>
+<%_ } -%>
 <%-
                 Object.entries(output).map(([k, v]) => {
                     const x = {};

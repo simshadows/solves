@@ -17,7 +17,22 @@ input-base:
       - a
       - b
 
-input-integer: {}
+input-integer:
+  dummyint1:
+    title: Dummy Integer 2
+    min: 1
+    max: 10
+    initial: 2
+  dummyint2:
+    title: Dummy Integer 2
+    min: 1
+    max: 10
+    initial: 7
+  dummyint3:
+    title: Dummy Integer 3
+    min: 1
+    max: 10
+    initial: 4
 
 input-constrained:
   clause:
