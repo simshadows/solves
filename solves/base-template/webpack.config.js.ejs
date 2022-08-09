@@ -15,9 +15,9 @@ function htmlWebpackPluginCommon(configArgs, mergeIn) {
 
         minify: (configArgs.mode === "production"),
 
-        title: "<%- appTitle -%>",
-        author: "<%- author -%>",
-        description: "<%- description -%>",
+        title: <%- JSON.stringify(String(appTitle)) -%>,
+        author: <%- JSON.stringify(String(author)) -%>,
+        description: <%- JSON.stringify(String(description)) -%>,
         keywords: "",
         //favicon: path.resolve(__dirname, "src", "favicon.png"),
     }, mergeIn);

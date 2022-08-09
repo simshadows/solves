@@ -53,7 +53,7 @@ export class App extends React.Component<{}, State> {
             //       controllable component!
 <%-
             Object.entries(allTextInputs).map(([k, v]) => "            " +
-                `input${upperCaseFirst(k)}: "${v.initialValues.join("\\n")}",`
+                `input${upperCaseFirst(k)}: ${safeString(v.initialValues.join("\n"))},`
             ).join("\n")
 %>
 <%-
@@ -114,13 +114,13 @@ export class App extends React.Component<{}, State> {
 
         return <div id="app">
             <div id="app-title">
-                <h1><%- appTitle -%></h1>
+                <h1><%= appTitle -%></h1>
             </div>
 <%-
                 Object.entries(allTextInputs).map(([k, v]) => {
                     const x = {};
                     x.inputID = k;
-                    x.title = v.title;
+                    x.label = v.title;
                     return ht.jsxInputComponent(x);
                 }).join("")
 -%>

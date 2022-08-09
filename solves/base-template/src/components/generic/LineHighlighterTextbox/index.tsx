@@ -19,7 +19,6 @@ import "codemirror/lib/codemirror.css";
 import "./index.css";
 
 interface Props {
-    label:        string;
     initialValue: string;
     invalidLines: Set<string>;
     onChange:     (event: {target: {value: string;};}) => Promise<void>;

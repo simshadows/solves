@@ -50,7 +50,7 @@ export function parseSolution(result: ClingoResult): ParsedSolution {
     return {
 <%-
         Object.entries(output).map(([k, v]) => "        " +
-            `${k}: op("${k}"),`
+            `${k}: op(${safeString(k)}),`
         ).join("\n")
 %>
     };

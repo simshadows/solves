@@ -156,19 +156,19 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     const independentFacts: ReadonlyMap<AllIndependentKeys, GeneratedFacts> = new Map([
 <%-
         Object.entries(inputBase).map(([k, v]) => "        " +
-            `["${k}", generateBaseDef(params.${k}, "${k}", ${v.parameters})],`
+            `[${safeString(k)}, generateBaseDef(params.${k}, ${safeString(k)}, ${v.parameters})],`
         ).join("\n")
 %>
 <%-
         Object.entries(inputInteger).map(([k, v]) => "        " +
-            `["${k}", generateIntegerDef(params.${k}, "${k}")],`
+            `[${safeString(k)}, generateIntegerDef(params.${k}, ${safeString(k)})],`
         ).join("\n")
 %>
     ]);
     const constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedFacts> = new Map([
 <%-
         Object.entries(inputConstrained).map(([k, v]) => "        " +
-            `["${k}", generateInstanceDef(params.${k}, "${k}", ${v.parameters})],`
+            `[${safeString(k)}, generateInstanceDef(params.${k}, ${safeString(k)}, ${v.parameters})],`
         ).join("\n")
 %>
     ]);

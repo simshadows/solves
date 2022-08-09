@@ -1,11 +1,11 @@
             <div className="input-wrapper">
                 <IntegerInput
-                    label="<%- title %>"
+                    label=<%- safeString(title) %>
                     min={<%- min %>}
                     max={<%- max %>}
                     value={this.state.input<%- upperCaseFirst(inputID) %>}
                     invalidLines={
-                        this.state.invalidInputs.get("<%- inputID %>") || new Set()
+                        this.state.invalidInputs.get(<%- safeString(inputID) %>) || new Set()
                     }
                     onChange={set<%- upperCaseFirst(inputID) %>}
                 />

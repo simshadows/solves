@@ -1,6 +1,6 @@
             <div className="output-table-wrapper">
                 <ResultDisplay
-                    fieldLabels={[<%- fieldLabels.map(x => `"${x}"`).join(", ") %>]}
+                    fieldLabels={[<%- fieldLabels.map(safeString).join(", ") %>]}
                     solutionData={
                         (typeof this.state.solution === "string")
                         ? this.state.solution
