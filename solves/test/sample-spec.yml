@@ -1,4 +1,7 @@
 name: graph-colouring
+appTitle: Vertex Colouring Solver
+author: simshadows
+description: your description here
 
 input-base:
   colour:
@@ -32,7 +35,7 @@ input-constrained:
 
 output:
   color:
-    title: Colourings
+    title: Valid Vertex Colouring
     fieldLabels:
       - Vertex
       - Colour

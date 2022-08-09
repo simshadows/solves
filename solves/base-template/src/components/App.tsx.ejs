@@ -113,6 +113,9 @@ export class App extends React.Component<{}, State> {
 -%>
 
         return <div id="app">
+            <div id="app-title">
+                <h1><%- appTitle -%></h1>
+            </div>
 <%-
                 Object.entries(allTextInputs).map(([k, v]) => {
                     const x = {};

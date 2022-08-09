@@ -15,9 +15,9 @@ function htmlWebpackPluginCommon(configArgs, mergeIn) {
 
         minify: (configArgs.mode === "production"),
 
-        title: "Solves Prototype",
-        author: "simshadows",
-        description: "Solves Prototype",
+        title: "<%- appTitle -%>",
+        author: "<%- author -%>",
+        description: "<%- description -%>",
         keywords: "",
         //favicon: path.resolve(__dirname, "src", "favicon.png"),
     }, mergeIn);

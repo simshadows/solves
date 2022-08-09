@@ -1,4 +1,7 @@
 name: vertex-cover
+appTitle: Vertex Cover Solver
+author: simshadows
+description: your description here
 
 input-base:
   vertex:

@@ -85,6 +85,10 @@ interface OutputPartialSpec {
 
 export interface SpecValues {
     name:            string;
+    appTitle:        string;
+    author:          string;
+    description:     string;
+
     encoding:        string;
     constraintsCode: string;
     
@@ -140,6 +144,10 @@ export function getSpecValues(specPath: string): SpecValues {
 
     return {
         name:            ensureStr(fileData?.name, "name"),
+        appTitle:        ensureStr(fileData?.appTitle, "appTitle"),
+        author:          ensureStr(fileData?.author, "author"),
+        description:     ensureStr(fileData?.description, "description"),
+
         encoding:        ensureStr(fileData?.encoding, "encoding"),
         constraintsCode: ensureStr(fileData?.constraints, "constraints"),
 

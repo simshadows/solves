@@ -1,4 +1,7 @@
 name: cnf-sat
+appTitle: CNF-SAT Solver
+author: simshadows
+description: your description here
 
 input-base:
   variable:

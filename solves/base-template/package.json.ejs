@@ -1,7 +1,10 @@
 {
-  "name": "<%- name %>",
+  "name": <%- JSON.stringify(String(name)) %>,
+  "author": <%- JSON.stringify(String(author)) %>,
+  "version": "0.0.0-dev",
   "private": true,
   "license": "MIT",
+  "description": <%- JSON.stringify(String(description)) %>,
   "scripts": {
     "test": "jest",
     "build": "webpack",

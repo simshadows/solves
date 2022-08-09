@@ -8,6 +8,13 @@
     width: 100%;
 }
 
+#app-title {
+    width: 100%;
+}
+#app-title > * {
+    margin: 0;
+}
+
 .input-wrapper {
     flex: 1 0 0;
 
