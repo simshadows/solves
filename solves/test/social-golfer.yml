@@ -1,0 +1,74 @@
+name: social-golfer
+appTitle: Social Golfer Solver
+author: simshadows
+description: A solver for the Social Golfer Problem. Problem encoding credit goes to Dr. Abdallah Saffidine. Only minor modifications were made to adapt his work for the code generator tooling. Inspired by Bradley Buchanan's near-solver app (goodenoughgolfers.com).
+
+input-base:
+  player:
+    title: Players
+    params: 1
+    initialValues:
+      - alleson
+      - brad
+      - charlie
+      - danielle
+      - fredric
+      - george
+      - harriet
+      - ivan
+      - jenny
+      - karen
+      - laura
+      - mona
+      - nathan
+      - olive
+      - penelope
+      - rachel
+      - stan
+      - tom
+
+input-integer:
+  groups:
+    title: Groups
+    min: 1
+    max: 50
+    initial: 5
+  rounds:
+    title: Rounds
+    min: 1
+    max: 20
+    initial: 5
+
+input-constrained:
+  disallowed:
+    title: Disallowed Pairs
+    params: 2
+    initialValues:
+      - brad,danielle
+
+output:
+  assign:
+    title: Selection
+    fieldLabels:
+      - Player
+      - Round
+      - Group
+
+constraints: |
+  domainok(disallowed(P1,P2)) :- base(player,P1), base(player,P2), P1 != P2, instance(disallowed(P1,P2)).
+
+encoding: |
+  round(1..R) :- integer(rounds,R).
+  group(1..G) :- integer(groups,G).
+  size((N-1)/G+1) :- N = #count { P : base(player,P) }, integer(groups,G).
+  1 { assign(P, R, G) : group(G) } 1 :- base(player,P), round(R).
+  N - 1 { assign(P,R,G) : base(player,P) } N :- round(R), group(G), size(N).
+  same(P1, P2, R) :- assign(P1, R, G), assign(P2, R, G), P1 < P2.
+  :- same(P1,P2, R), instance(disallowed(P1,P2)).
+  :- same(P1,P2, R), instance(disallowed(P2,P1)).
+
+  :- same(P1, P2, R), same(P1, P2, S), R < S. %%% satisfaction constraint
+  %#minimize { 1,P1,P2,R,S : same(P1, P2, R), same(P1, P2, S), R < S }. %%% optimization constraint
+
+  solution(assign(P,R,G)) :- assign(P,R,G).
+

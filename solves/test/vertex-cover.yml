@@ -1,7 +1,7 @@
 name: vertex-cover
 appTitle: Vertex Cover Solver
 author: simshadows
-description: your description here
+description: Problem encoding credit goes to Dr. Abdallah Saffidine. Only minor modifications were made to adapt his work for the code generator tooling.
 
 input-base:
   vertex:
