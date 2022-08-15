@@ -50,12 +50,23 @@ output:
   assign:
     title: Selection
     fieldLabels:
-      - Player
       - Round
       - Group
+      - Players
+    format:
+      groupBy:
+        - Round
+        - Group
+      sortBy:
+        - Round
+        - Group
 
 constraints: |
-  domainok(disallowed(P1,P2)) :- base(player,P1), base(player,P2), P1 != P2, instance(disallowed(P1,P2)).
+  domainok(disallowed(P1,P2)) :-
+      base(player,P1),
+      base(player,P2),
+      P1 != P2,
+      instance(disallowed(P1,P2)).
 
 encoding: |
   round(1..R) :- integer(rounds,R).
@@ -67,8 +78,10 @@ encoding: |
   :- same(P1,P2, R), instance(disallowed(P1,P2)).
   :- same(P1,P2, R), instance(disallowed(P2,P1)).
 
-  :- same(P1, P2, R), same(P1, P2, S), R < S. %%% satisfaction constraint
-  %#minimize { 1,P1,P2,R,S : same(P1, P2, R), same(P1, P2, S), R < S }. %%% optimization constraint
+  %%% satisfaction constraint
+  :- same(P1, P2, R), same(P1, P2, S), R < S.
+  %%% optimization constraint
+  %#minimize { 1,P1,P2,R,S : same(P1, P2, R), same(P1, P2, S), R < S }.
 
-  solution(assign(P,R,G)) :- assign(P,R,G).
+  solution(assign(R,G,P)) :- assign(P,R,G).
 

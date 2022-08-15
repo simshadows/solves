@@ -32,6 +32,9 @@ output:
     title: Assignment
     fieldLabels:
       - Variable
+    format:
+      groupBy: []
+      sortBy: []
 
 constraints: |
   sign(pos).

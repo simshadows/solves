@@ -25,6 +25,22 @@ function ensureInt(obj: any, argName: string): number {
         throw new Error(`'${argName}' spec key is not a safe integer.`);
     return obj;
 }
+function ensureUniqueStrArray(obj: any, argName: string): string[] {
+    if (!Array.isArray(obj)) {
+        throw new Error(`'${argName}' spec key is not an array of strings.`);
+    }
+    const newArr: string[] = [];
+    for (const e of obj) {
+        if (typeof e !== "string") {
+            throw new Error(`'${argName}' spec key must be an array of strings.`);
+        }
+        newArr.push(e);
+    }
+    if ((new Set(newArr)).size !== newArr.length) {
+        throw new Error(`'${argName}' spec key must contain unique strings.`);
+    }
+    return newArr;
+}
 //function ensureNum(obj: any, argName: string): number {
 //    if (typeof obj === "number") return obj;
 //    throw new Error(`'${argName}' spec key is not a number.`);
@@ -60,11 +76,29 @@ function inputIntegerTransform(obj: any): InputIntegerPartialSpec {
     };
 }
 
-/********************************************************************/
+function fieldLabelsToIndices(
+    arr:       string[],
+    reference: string[],
+    argName:   string,
+    refName:   string,
+): number[] {
+    const indices: number[] = arr.map(x => reference.indexOf(x));
+    if (indices.some(x => (x < 0))) {
+        throw new Error(`'${argName}' spec key must contain strings found in ${refName}.`);
+    }
 
-interface OutputFieldSpec {
-    label: string;
+    // Sanity checks
+    if ((new Set(indices)).size !== indices.length) {
+        throw new Error(`Critical bug: arr must map to unique indices.`);
+    }
+    if (indices.some(x => x >= reference.length)) {
+        throw new Error(`Critical bug: arr must map to indices within range.`);
+    }
+    
+    return indices;
 }
+
+/********************************************************************/
 
 interface InputPartialSpec {
     title:         string;
@@ -78,10 +112,26 @@ interface InputIntegerPartialSpec {
     initial: number;
 }
 
+/*** ***/
+
+//type OutputFieldSortBy = "ascending" | "descending";
+
+interface OutputFieldSpec {
+    label: string;
+
+    //sortBy: OutputFieldSortBy; // We are always ascending for now
+}
+
 interface OutputPartialSpec {
     title:  string;
     fields: OutputFieldSpec[];
+
+    // Formatting
+    groupPriority: number[]; // closer to front = higher-priority
+    sortPriority: number[]; // closer to front = higher-priority
 }
+
+/*** ***/
 
 export interface SpecValues {
     name:            string;
@@ -157,17 +207,39 @@ export function getSpecValues(specPath: string): SpecValues {
 
         output: objectValueMap(output, (obj: any) => {
             const title: string = ensureStr(obj.title, "output[].title");
-            const fieldLabels: any = obj.fieldLabels;
-            if (!Array.isArray(fieldLabels)) {
-                throw new Error(`Output ${obj.title} must provide a fields specification array.`);
-            }
-
-            const fields: OutputFieldSpec[] = fieldLabels.map(
-                x => ({label: ensureStr(x, `output[].fields[].label`)})
+            const fieldLabels: string[] = ensureUniqueStrArray(
+                obj.fieldLabels, "output[].fieldLabels",
+            );
+            const groupBy: string[] = ensureUniqueStrArray(
+                obj.format?.groupBy, "output[].format.groupBy",
+            );
+            const sortBy: string[] = ensureUniqueStrArray(
+                obj.format?.sortBy, "output[].format.sortBy",
             );
 
-            const outputObj = {title, fields};
-            return outputObj;
+            const fields: OutputFieldSpec[] = fieldLabels.map(x => ({label: x}));
+
+            const groupPriority: number[] = fieldLabelsToIndices(
+                groupBy,
+                fieldLabels,
+                "output[].format.groupBy",
+                "output[].fieldLabels",
+            );
+            const sortPriority: number[] = fieldLabelsToIndices(
+                sortBy,
+                fieldLabels,
+                "output[].format.sortBy",
+                "output[].fieldLabels",
+            );
+
+            // We want to sort all fields, so we fill more values
+            for (let i = 0; i < fieldLabels.length; ++i) {
+                if (!sortPriority.includes(i)) sortPriority.push(i);
+            }
+            console.log(groupPriority);
+            console.log(sortPriority);
+
+            return {title, fields, groupPriority, sortPriority};
         }),
     };
 }

@@ -49,6 +49,9 @@ output:
       - Variable
       - Dummy1
       - Dummy2
+    format:
+      groupBy: []
+      sortBy: []
 
 constraints: |
   sign(pos).
