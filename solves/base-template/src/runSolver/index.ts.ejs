@@ -8,6 +8,9 @@ import {
     type ParsedSolution as _ParsedSolution,
     parseSolution,
 } from "./parseSolution";
+import {
+    sortSolution,
+} from "./sortSolution";
 
 import {reConstant} from "../utils";
 
@@ -210,9 +213,14 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
             return [inputID, constTups];
         }),
     );
-    return {
-        solution: resultObj ? parseSolution(resultObj) : "invalid-input",
-        invalidConstantTuples,
-    };
+
+    const solution: ParsedSolution = resultObj
+                                     ? parseSolution(resultObj)
+                                     : "invalid-input";
+    if (typeof solution !== "string") {
+        sortSolution(solution);
+    }
+
+    return {solution, invalidConstantTuples};
 }
 

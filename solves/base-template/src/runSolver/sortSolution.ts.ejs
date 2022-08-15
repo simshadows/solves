@@ -1,0 +1,24 @@
+import {type SatisfiableParsedSolution} from "./parseSolution";
+
+// Soft error that just throws an error in the console log.
+// If this error ever appears, something obviously went wrong.
+function warnIfNotString(s: string | undefined): string {
+    if (typeof s !== "string") {
+        console.error(`Expected a string, but instead got ${s}.`);
+        return "";
+    }
+    return s;
+}
+
+// Sorts in-place
+export function sortSolution(result: SatisfiableParsedSolution): void {
+<% for (const [outputID, partialSpec] of Object.entries(output)) { -%>
+    result.<%- outputID %>.sort((a, b) => (
+<%    for (const [i, keyIndex] of partialSpec.sortPriority.entries()) { -%>
+        <%- (i === 0) ? "" : "|| " -%>warnIfNotString(a[<%- keyIndex %>]).localeCompare(warnIfNotString(b[<%- keyIndex %>]))
+<%    } -%>
+        || 0 // Fallback
+    ));
+<% } -%>
+}
+
