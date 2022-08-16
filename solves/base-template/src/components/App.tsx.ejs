@@ -9,6 +9,9 @@ import React from "react";
 `import {TextAreaInput} from "./TextAreaInput";\n`
 -%>
 import {ResultDisplay} from "./ResultDisplay";
+import {ResultDisplayDoubleGrouped} from "./ResultDisplayDoubleGrouped";
+ResultDisplay;
+ResultDisplayDoubleGrouped;
 
 import {
     type ParsedSolution,
@@ -138,6 +141,14 @@ export class App extends React.Component<{}, State> {
 -%>
             </div>
 <%_ } -%>
+        <ResultDisplayDoubleGrouped
+            fieldLabels={["Round", "Group", "Players"]}
+            solutionData={
+                (typeof this.state.solution === "string")
+                ? this.state.solution
+                : this.state.solution.assign
+            }
+        />
 <%-
                 Object.entries(output).map(([k, v]) => {
                     const x = {};
