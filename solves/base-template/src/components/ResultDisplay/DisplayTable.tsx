@@ -1,8 +1,8 @@
 import React from "react";
 
-import {type ParsedSolutionSpecialCode} from "../runSolver";
+import {type ParsedSolutionSpecialCode} from "../../runSolver";
 
-import "./ResultDisplay.css";
+import "./DisplayTable.css";
 
 function renderRow(strs: string[], i: number) {
     return <tr key={i}>
@@ -19,7 +19,7 @@ interface Props {
     solutionData: string[][] | ParsedSolutionSpecialCode | "not-initialized";
 }
 
-export function ResultDisplay(props: Props) {
+export function DisplayTable(props: Props) {
     switch (props.solutionData) {
         case "not-initialized":
             return <>Loading...</>;

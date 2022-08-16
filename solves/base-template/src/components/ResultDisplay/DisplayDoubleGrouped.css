@@ -1,0 +1,20 @@
+.display-double-grouped-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 1em;
+
+    min-height: 6em;
+    width: 100%;
+}
+.display-double-grouped-inner > * {
+    min-width: 7em;
+}
+
+.display-double-grouped-title {
+    font-weight: bold;
+    text-decoration: underline;
+}
+

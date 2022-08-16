@@ -1,0 +1,42 @@
+import React from "react";
+
+import {type ParsedSolution} from "../../runSolver";
+
+import {DisplayTable} from "./DisplayTable";
+import {DisplayDoubleGrouped} from "./DisplayDoubleGrouped";
+DisplayTable;
+DisplayDoubleGrouped;
+
+import "./index.css";
+
+interface Props {
+    solutionData: ParsedSolution | "not-initialized";
+}
+
+export function ResultDisplay(props: Props) {
+    return <>
+        <DisplayDoubleGrouped
+            fieldLabels={["Round", "Group", "Players"]}
+            solutionData={
+                (typeof props.solutionData === "string")
+                ? props.solutionData
+                : props.solutionData.assign
+            }
+        />
+<% for (const [outputID, partialSpec] of Object.entries(output)) { -%>
+        <div className="output-table-wrapper">
+            <DisplayTable
+                fieldLabels={[<%-
+                    partialSpec.fields.map(y => safeString(y.label)).join(", ")
+                %>]}
+                solutionData={
+                    (typeof props.solutionData === "string")
+                    ? props.solutionData
+                    : props.solutionData.<%- outputID %>
+                }
+            />
+        </div>
+<% } -%>
+    </>;
+}
+

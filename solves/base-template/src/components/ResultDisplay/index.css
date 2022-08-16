@@ -1,0 +1,23 @@
+.output-box {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5em;
+
+    min-height: 6em;
+    padding: 0.5em;
+    width: 100%;
+    border: thin solid black;
+    border-radius: 0.2em;
+}
+.output-box > * {
+    width: 100%;
+}
+
+table :is(th, td) {
+    font-family: monospace;
+}
+table td {
+    border: thin solid #aaa;
+    padding: 0.1em 0.3em 0.1em 0.3em;
+}
+

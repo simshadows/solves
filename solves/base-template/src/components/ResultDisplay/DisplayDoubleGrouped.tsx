@@ -4,13 +4,13 @@
 
 import React from "react";
 
-import {type ParsedSolutionSpecialCode} from "../runSolver";
+import {type ParsedSolutionSpecialCode} from "../../runSolver";
 import {
     warnIfNotString,
     arrayGroupAdjacent,
-} from "../utils";
+} from "../../utils";
 
-import "./ResultDisplayDoubleGrouped.css";
+import "./DisplayDoubleGrouped.css";
 
 type GroupedSolution = [string, string[][]][];
 
@@ -25,15 +25,17 @@ interface GroupDisplayProps {
 function GroupDisplay(props: GroupDisplayProps) {
     // TODO: How to splice multiple arbitrary indices in a simple manner?
     const modifiedData: string[][] = props.data.map(x => x.splice(2));
-    return <table className="output-inner-group">
+    return <table className="display-double-grouped-table">
         <thead>
             <tr><th>Group {props.groupName}</th></tr>
         </thead>
         <tbody>
             {modifiedData.map(
-                x => <tr key={warnIfNotString(x[0])}><td>
-                    {warnIfNotString(x[0])}
-                </td></tr>
+                x => <tr key={warnIfNotString(x[0])}>
+                    <td>
+                        {warnIfNotString(x[0])}
+                    </td>
+                </tr>
             )}
         </tbody>
     </table>;
@@ -52,15 +54,19 @@ function RoundDisplay(props: RoundDisplayProps) {
         props.data,
         x => warnIfNotString(x[1]),
     );
-    return <div className="output-table-wrapper">
-        Round {props.roundName}
-        {grouped.map(
-            x => <GroupDisplay
-                key={x[0]}
-                groupName={x[0]}
-                data={x[1]}
-            />
-        )}
+    return <div className="output-box">
+        <span className="display-double-grouped-title">
+            Round {props.roundName}
+        </span>
+        <div className="display-double-grouped-inner">
+            {grouped.map(
+                x => <GroupDisplay
+                    key={x[0]}
+                    groupName={x[0]}
+                    data={x[1]}
+                />
+            )}
+        </div>
     </div>;
 }
 
@@ -71,7 +77,7 @@ interface Props {
     solutionData: string[][] | ParsedSolutionSpecialCode | "not-initialized";
 }
 
-export function ResultDisplayDoubleGrouped(props: Props) {
+export function DisplayDoubleGrouped(props: Props) {
     switch (props.solutionData) {
         case "not-initialized":
             return <>Loading...</>;
