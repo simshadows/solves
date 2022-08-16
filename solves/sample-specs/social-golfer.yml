@@ -31,12 +31,12 @@ input-integer:
   groups:
     title: Groups
     min: 1
-    max: 50
+    max: 10
     initial: 5
   rounds:
     title: Rounds
     min: 1
-    max: 20
+    max: 10
     initial: 5
 
 input-constrained:

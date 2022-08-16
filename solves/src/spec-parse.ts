@@ -236,8 +236,6 @@ export function getSpecValues(specPath: string): SpecValues {
             for (let i = 0; i < fieldLabels.length; ++i) {
                 if (!sortPriority.includes(i)) sortPriority.push(i);
             }
-            console.log(groupPriority);
-            console.log(sortPriority);
 
             return {title, fields, groupPriority, sortPriority};
         }),

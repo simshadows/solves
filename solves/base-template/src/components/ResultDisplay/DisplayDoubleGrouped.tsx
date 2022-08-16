@@ -65,10 +65,18 @@ interface HighPriorityDisplayProps {
 }
 
 function HighPriorityDisplay(props: HighPriorityDisplayProps) {
+    const fieldNum = props.groupPriority[1];
+
+    // Sort again (even though it may already be sorted)
+    props.data.sort((a, b) => (
+        warnIfNotString(a[fieldNum]).localeCompare(warnIfNotString(b[fieldNum]))
+    ));
+
     const grouped: GroupedSolution = arrayGroupAdjacent(
         props.data,
-        x => warnIfNotString(x[props.groupPriority[1]]),
+        x => warnIfNotString(x[fieldNum]),
     );
+
     return <div className="output-box">
         <span className="display-double-grouped-title">
             {props.groupLabel}
@@ -77,7 +85,7 @@ function HighPriorityDisplay(props: HighPriorityDisplayProps) {
             {grouped.map(
                 x => <LowPriorityDisplay
                     key={x[0]}
-                    groupLabel={`${props.fieldLabels[props.groupPriority[1]]} ${x[0]}`}
+                    groupLabel={`${props.fieldLabels[fieldNum]} ${x[0]}`}
                     groupPriority={props.groupPriority}
                     data={x[1]}
                 />
@@ -101,9 +109,16 @@ export function DisplayDoubleGrouped(props: Props) {
         </div>;
     }
 
+    const fieldNum = props.groupPriority[0];
+
+    // Sort again (even though it may already be sorted)
+    props.solutionData.sort((a, b) => (
+        warnIfNotString(a[fieldNum]).localeCompare(warnIfNotString(b[fieldNum]))
+    ));
+
     const groupedData: GroupedSolution = arrayGroupAdjacent(
         props.solutionData,
-        x => warnIfNotString(x[props.groupPriority[0]]),
+        x => warnIfNotString(x[fieldNum]),
     );
 
     return <>
@@ -112,7 +127,7 @@ export function DisplayDoubleGrouped(props: Props) {
                 x => <HighPriorityDisplay
                     key={x[0]}
                     fieldLabels={props.fieldLabels}
-                    groupLabel={`${props.fieldLabels[props.groupPriority[0]]} ${x[0]}`}
+                    groupLabel={`${props.fieldLabels[fieldNum]} ${x[0]}`}
                     groupPriority={props.groupPriority}
                     data={x[1]}
                 />
