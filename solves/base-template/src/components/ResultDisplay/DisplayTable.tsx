@@ -1,7 +1,5 @@
 import React from "react";
 
-import {type ParsedSolutionSpecialCode} from "../../runSolver";
-
 import "./DisplayTable.css";
 
 function renderRow(strs: string[], i: number) {
@@ -16,36 +14,29 @@ function renderRow(strs: string[], i: number) {
 
 interface Props {
     fieldLabels: string[];
-    solutionData: string[][] | ParsedSolutionSpecialCode | "not-initialized";
+    solutionData: string[][];
 }
 
 export function DisplayTable(props: Props) {
-    switch (props.solutionData) {
-        case "not-initialized":
-            return <>Loading...</>;
-        case "no-solution":
-            return <>No solution.</>;
-        case "invalid-input":
-            return <>Invalid input.</>;
-        case "error":
-            return <>An error has occurred.</>;
-        default: // Fallthrough
-    }
     if (props.solutionData.length === 0) {
-        return <>There is a solution, but it has no values.</>;
+        return <div className="output-table-wrapper">
+            There is a solution, but it has no values.
+        </div>;
     }
 
-    return <table className="result-satisfiable">
-        <thead>
-            <tr key={0}>
-                {props.fieldLabels.map((x: string, i: number) =>
-                    <th key={i}>{x}</th>
-                )}
-            </tr>
-        </thead>
-        <tbody>
-            {props.solutionData.map(renderRow)}
-        </tbody>
-    </table>;
+    return <div className="output-table-wrapper">
+        <table className="result-satisfiable">
+            <thead>
+                <tr key={0}>
+                    {props.fieldLabels.map((x: string, i: number) =>
+                        <th key={i}>{x}</th>
+                    )}
+                </tr>
+            </thead>
+            <tbody>
+                {props.solutionData.map(renderRow)}
+            </tbody>
+        </table>
+    </div>;
 }
 

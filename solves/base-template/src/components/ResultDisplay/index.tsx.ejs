@@ -2,6 +2,7 @@ import React from "react";
 
 import {type ParsedSolution} from "../../runSolver";
 
+import {DisplaySpecialMessage} from "./DisplaySpecialMessage";
 import {DisplayTable} from "./DisplayTable";
 import {DisplayDoubleGrouped} from "./DisplayDoubleGrouped";
 DisplayTable;
@@ -14,28 +15,25 @@ interface Props {
 }
 
 export function ResultDisplay(props: Props) {
+    if (typeof props.solutionData === "string") {
+        // If it's a string, an edge case has occurred (such as "no solution found").
+        return <DisplaySpecialMessage
+            specialCode={props.solutionData}
+        />;
+    }
+
     return <>
         <DisplayDoubleGrouped
             fieldLabels={["Round", "Group", "Players"]}
-            solutionData={
-                (typeof props.solutionData === "string")
-                ? props.solutionData
-                : props.solutionData.assign
-            }
+            solutionData={props.solutionData.assign}
         />
 <% for (const [outputID, partialSpec] of Object.entries(output)) { -%>
-        <div className="output-table-wrapper">
-            <DisplayTable
-                fieldLabels={[<%-
-                    partialSpec.fields.map(y => safeString(y.label)).join(", ")
-                %>]}
-                solutionData={
-                    (typeof props.solutionData === "string")
-                    ? props.solutionData
-                    : props.solutionData.<%- outputID %>
-                }
-            />
-        </div>
+        <DisplayTable
+            fieldLabels={[<%-
+                partialSpec.fields.map(y => safeString(y.label)).join(", ")
+            %>]}
+            solutionData={props.solutionData.<%- outputID %>}
+        />
 <% } -%>
     </>;
 }

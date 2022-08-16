@@ -1,10 +1,10 @@
 /*
  * This is a prototype module. The goal is to generate this in a better way.
+ * TODO: Immutability at the type-level?
  */
 
 import React from "react";
 
-import {type ParsedSolutionSpecialCode} from "../../runSolver";
 import {
     warnIfNotString,
     arrayGroupAdjacent,
@@ -24,7 +24,7 @@ interface GroupDisplayProps {
 
 function GroupDisplay(props: GroupDisplayProps) {
     // TODO: How to splice multiple arbitrary indices in a simple manner?
-    const modifiedData: string[][] = props.data.map(x => x.splice(2));
+    const modifiedData: string[][] = props.data.map(x => [...x].splice(2));
     return <table className="display-double-grouped-table">
         <thead>
             <tr><th>Group {props.groupName}</th></tr>
@@ -74,23 +74,14 @@ function RoundDisplay(props: RoundDisplayProps) {
 
 interface Props {
     fieldLabels: string[];
-    solutionData: string[][] | ParsedSolutionSpecialCode | "not-initialized";
+    solutionData: string[][];
 }
 
 export function DisplayDoubleGrouped(props: Props) {
-    switch (props.solutionData) {
-        case "not-initialized":
-            return <>Loading...</>;
-        case "no-solution":
-            return <>No solution.</>;
-        case "invalid-input":
-            return <>Invalid input.</>;
-        case "error":
-            return <>An error has occurred.</>;
-        default: // Fallthrough
-    }
     if (props.solutionData.length === 0) {
-        return <>There is a solution, but it has no values.</>;
+        return <div className="output-table-wrapper">
+            There is a solution, but it has no values.
+        </div>;
     }
 
     const groupedData: GroupedSolution = arrayGroupAdjacent(
