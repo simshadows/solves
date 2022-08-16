@@ -10,7 +10,9 @@ import "./index.css";
 
 ReactDOM.render(
     <div className="wrapper">
-        <App />
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
     </div>,
     document.getElementById("app-mount")
 );
