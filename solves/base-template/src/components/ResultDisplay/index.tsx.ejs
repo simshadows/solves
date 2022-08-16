@@ -32,7 +32,7 @@ export function ResultDisplay(props: Props) {
             solutionData={props.solutionData.<%- outputID %>}
         />
 <%    } else if (partialSpec.groupPriority.length === 1) { -%>
-<%        throw new Error("Group priority of 1 is currently not supported.") -%>
+<%        throw new Error("Having 1 output grouping is currently not supported.") -%>
 <%    } else if (partialSpec.groupPriority.length === 2) { -%>
         <DisplayDoubleGrouped
             fieldLabels={[<%-
@@ -44,7 +44,7 @@ export function ResultDisplay(props: Props) {
             solutionData={props.solutionData.<%- outputID %>}
         />
 <%    } else { -%>
-<%        throw new Error(`Group priority greater than 2 is currently not supported.`) -%>
+<%        throw new Error(`More than 2 output groupings is currently not supported.`) -%>
 <%    } -%>
 <% } -%>
     </>;

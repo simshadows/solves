@@ -1,0 +1,111 @@
+/*
+ * The generateInputMap function maps the arbitrary input strings (delimited by
+ * commas in the same line) into names that Clingo can use.
+ *
+ * For example, if the input contains the following:
+ *      [ "Alfa, Bravo, Charlie",
+ *        "Delta, Echo, Foxtrot" ]
+ * then this might map to the following:
+ *      [ ["alfa", "bravo", "charlie"],
+ *        ["delta", "echo", "foxtrot"] ]
+ *
+ * All duplicate strings across all inputs will be considered the same string.
+ *
+ * The complexity of this module could technically be cut down, but the human-
+ * friendly mapping between strings and constant can be useful for debugging.
+ */
+
+import {warnIfNotString} from "../utils";
+import {reConstant} from "../utils";
+
+// Arbitrarily large, Clingo might crash before this is reached.
+const MAX_COLLISION_NUM = 10000;
+
+const reConstantAllAllowed = /[^a-zA-Z0-9]/gm;
+
+// TODO: Implement a warning for homoglyphs?
+function getBaseName(s: string): string {
+    let partial = s
+        .normalize("NFKD")
+        .replace(reConstantAllAllowed, "")
+        .substring(0, 14); // Arbitrary truncation length
+    const ret = `x${partial}x`; // never want capitals/digits on either end
+    console.assert(ret.match(reConstant));
+    return ret;
+}
+
+function convertToConstantTuples(
+    s: string,
+    originalToConstant: Map<string, string>,
+): string {
+    return s.split(",").map(
+        y => warnIfNotString(
+            originalToConstant.get(y.trim())
+        )
+    ).join(",");
+}
+
+/*** ***/
+
+export interface OriginalInputs {
+<% for (const [inputID, partialSpec] of Object.entries(allTextInputs)) { -%>
+    <%- inputID %>: string[];
+<% } -%>
+}
+
+export interface InputMap {
+    asClingoConstantTuples: {
+<% for (const [inputID, partialSpec] of Object.entries(allTextInputs)) { -%>
+        <%- inputID %>: string[];
+<% } -%>
+    };
+    constantToOriginal: Map<string, string>;
+    constantTupleToOriginal: Map<string, string>;
+}
+
+export function generateInputMap(originals: OriginalInputs): InputMap {
+    const allLines: string[] = [
+<% for (const [inputID, partialSpec] of Object.entries(allTextInputs)) { -%>
+        ...originals.<%- inputID %>,
+<% } -%>
+    ];
+
+    const allStrings: Set<string> = new Set(
+        allLines.map(x => x.split(",").map(y => y.trim())).flat()
+    );
+
+    const constantToOriginal: Map<string, string> = new Map();
+    const originalToConstant: Map<string, string> = new Map();
+
+    // Maps "base name" to the number of strings that map to it.
+    const collisions: Map<string, number> = new Map();
+
+    for (const s of allStrings) {
+        if (originalToConstant.has(s)) continue; // Already mapped
+
+        const baseName = getBaseName(s);
+        const n = collisions.get(baseName) || 0;
+        if (n > MAX_COLLISION_NUM) throw new Error("Too many collisions.");
+
+        const constName = (n === 0) ? baseName : `${baseName}${n - 1}`;
+        constantToOriginal.set(constName, s);
+        originalToConstant.set(s, constName);
+        collisions.set(baseName, n + 1);
+    }
+
+    const op = (x: string) => convertToConstantTuples(x, originalToConstant);
+    const constantTupleToOriginal: Map<string, string> = new Map(
+        allLines.map(x => [op(x), x])
+    );
+
+    return {
+        asClingoConstantTuples: {
+<% for (const [inputID, partialSpec] of Object.entries(allTextInputs)) { -%>
+            <%- inputID %>: originals.<%- inputID %>.map(op),
+<% } -%>
+        },
+        constantToOriginal,
+        constantTupleToOriginal,
+    };
+}
+

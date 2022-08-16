@@ -8,24 +8,24 @@ input-base:
     title: Players
     params: 1
     initialValues:
-      - alleson
-      - brad
-      - charlie
-      - danielle
-      - fredric
-      - george
-      - harriet
-      - ivan
-      - jenny
-      - karen
-      - laura
-      - mona
-      - nathan
-      - olive
-      - penelope
-      - rachel
-      - stan
-      - tom
+      - Alleson
+      - Brad
+      - Charlie
+      - Danielle
+      - Fredric
+      - George
+      - Harriet
+      - Ivan
+      - Jenny
+      - Karen
+      - Laura
+      - Mona
+      - Nathan
+      - Olive
+      - Penelope
+      - Rachel
+      - Stan
+      - Tom
 
 input-integer:
   groups:
@@ -44,7 +44,8 @@ input-constrained:
     title: Disallowed Pairs
     params: 2
     initialValues:
-      - brad,danielle
+      - Brad, Danielle
+      - George, Ivan
 
 output:
   assign:

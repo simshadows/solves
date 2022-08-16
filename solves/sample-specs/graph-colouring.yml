@@ -8,9 +8,9 @@ input-base:
     title: Colours
     params: 1
     initialValues:
-      - red
-      - green
-      - blue
+      - Red
+      - Green
+      - Blue
   vertex:
     title: Vertices
     params: 1
@@ -27,11 +27,11 @@ input-constrained:
     title: Edges
     params: 2
     initialValues:
-      - v1,v2
-      - v2,v3
-      - v3,v4
-      - v4,v1
-      - v1,v3
+      - v1, v2
+      - v2, v3
+      - v3, v4
+      - v4, v1
+      - v1, v3
 
 output:
   color:

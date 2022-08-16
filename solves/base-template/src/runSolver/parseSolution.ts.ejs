@@ -14,7 +14,11 @@ function solutionPartialRE(name: string) {
     return `solution\\(${name}\\((.+)\\)\\)`;
 }
 
-function parseSolutionStr(s: string, name: string): string[] {
+function parseSolutionStr(
+    s: string,
+    name: string,
+    constantToOriginal: Map<string, string>,
+): string[] {
     const reSolution = new RegExp(`^${solutionPartialRE(name)}$`, "g");
     const matches = [...s.matchAll(reSolution)];
     console.assert(matches.length <= 1); // Never have more than one match
@@ -22,10 +26,18 @@ function parseSolutionStr(s: string, name: string): string[] {
     if (match === undefined) return [];
     const group = match[1];
     if (group === undefined) throw new Error("One capture group expected.");
-    return group.split(",").map(x => x.trim());
+
+    const op = (y: string) => {
+        const z = constantToOriginal.get(y.trim());
+        return (z === undefined) ? y : z;
+    };
+    return group.split(",").map(op);
 }
 
-export function parseSolution(result: ClingoResult): ParsedSolution {
+export function parseSolution(
+    result: ClingoResult,
+    constantToOriginal: Map<string, string>,
+): ParsedSolution {
     switch (result.result) {
         case "UNSATISFIABLE":
             return "no-solution";
@@ -43,7 +55,7 @@ export function parseSolution(result: ClingoResult): ParsedSolution {
     
     const op = (name: string) => (
         solution
-            .map(x => parseSolutionStr(x, name))
+            .map(x => parseSolutionStr(x, name, constantToOriginal))
             .filter(x => x.length)
     );
 

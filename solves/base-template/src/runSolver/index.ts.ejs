@@ -4,15 +4,20 @@ import {
 } from "clingo-wrapper";
 
 import {
+    type InputMap,
+    generateInputMap,
+} from "./generateInputMap";
+import {
     type ParsedSolutionSpecialCode as _ParsedSolutionSpecialCode,
     type ParsedSolution as _ParsedSolution,
     parseSolution,
 } from "./parseSolution";
-import {
-    sortSolution,
-} from "./sortSolution";
+import {sortSolution} from "./sortSolution";
 
-import {reConstant} from "../utils";
+import {
+    reConstant,
+    warnIfNotString,
+} from "../utils";
 
 import logicSpecStr from "./logicSpec.lp";
 import validationSpecStr from "./validationSpec.lp";
@@ -41,10 +46,9 @@ function generateClingoFacts(
     for (const part of constantTuples) {
         const substrs: string[] = part.split(",").map(s => s.trim());
         
-        const isCorrectTupleSize = (substrs.length === expectedTupleSize);
-        const allConstantsAreCorrectSyntax = substrs.every(x => x.match(reConstant));
+        console.assert(substrs.every(x => x.match(reConstant)));
 
-        if (isCorrectTupleSize && allConstantsAreCorrectSyntax) {
+        if (substrs.length === expectedTupleSize) {
             const fact: string = lineGenFn(name, substrs.join(","));
             console.assert(fact.replaceAll(/\s/g, "") == fact); // Should be no spaces
             clingoFacts.set(fact, part);
@@ -62,12 +66,12 @@ function generateClingoFacts(
 
 
 function generateBaseDef(
-    constants:         string[],
+    constantTuples:    string[],
     name:              string,
     expectedTupleSize: number,
 ): GeneratedFacts {
     return generateClingoFacts(
-        constants,
+        constantTuples,
         name,
         (n, t) => `base(${n},${t}).`,
         expectedTupleSize,
@@ -76,12 +80,12 @@ function generateBaseDef(
 generateBaseDef; // TODO: Conditionally render the function definition?
 
 function generateInstanceDef(
-    constants:         string[],
+    constantTuples:    string[],
     name:              string,
     expectedTupleSize: number,
 ): GeneratedFacts {
     return generateClingoFacts(
-        constants,
+        constantTuples,
         name,
         (n, t) => `instance(${n}(${t})).`,
         expectedTupleSize,
@@ -136,30 +140,33 @@ async function getConstantTuplesThatFailConstraints(
 /*** ***/
 
 export interface SolverParameters {
-<%-
-    Object.entries(allTextInputs).map(([k, v]) => "    " +
-        `${k}: string[];`
-    ).join("\n")
-%>
-<%-
-    Object.entries(inputInteger).map(([k, v]) => "    " +
-        `${k}: number;`
-    ).join("\n")
-%>
+<% for (const [inputID, partialSpec] of Object.entries(allTextInputs)) { -%>
+    <%- inputID %>: string[];
+<% } -%>
+<% for (const [inputID, partialSpec] of Object.entries(inputInteger)) { -%>
+    <%- inputID %>: number;
+<% } -%>
 }
 
 export interface SolverResult {
     solution: ParsedSolution;
-    invalidConstantTuples: Map<AllInputKeys, Set<string>>;
+    invalidLines: Map<AllInputKeys, Set<string>>;
 }
 
 export async function runSolver(params: SolverParameters): Promise<SolverResult> {
     console.log("Running 'runSolver()'.");
 
+    const inputMap: InputMap = generateInputMap({
+<% for (const [inputID, partialSpec] of Object.entries(allTextInputs)) { -%>
+        <%- inputID %>: params.<%- inputID %>,
+<% } -%>
+    });
+    const consts = inputMap.asClingoConstantTuples;
+
     const independentFacts: ReadonlyMap<AllIndependentKeys, GeneratedFacts> = new Map([
 <%-
         Object.entries(inputBase).map(([k, v]) => "        " +
-            `[${safeString(k)}, generateBaseDef(params.${k}, ${safeString(k)}, ${v.parameters})],`
+            `[${safeString(k)}, generateBaseDef(consts.${k}, ${safeString(k)}, ${v.parameters})],`
         ).join("\n")
 %>
 <%-
@@ -171,7 +178,7 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
     const constrainedFacts: ReadonlyMap<ConstrainedInputKeys, GeneratedFacts> = new Map([
 <%-
         Object.entries(inputConstrained).map(([k, v]) => "        " +
-            `[${safeString(k)}, generateInstanceDef(params.${k}, ${safeString(k)}, ${v.parameters})],`
+            `[${safeString(k)}, generateInstanceDef(consts.${k}, ${safeString(k)}, ${v.parameters})],`
         ).join("\n")
 %>
     ]);
@@ -205,22 +212,27 @@ export async function runSolver(params: SolverParameters): Promise<SolverResult>
         }
     })();
 
-    const invalidConstantTuples: Map<AllInputKeys, Set<string>> = new Map(
+    const invalidLines: Map<AllInputKeys, Set<string>> = new Map(
         [...independentFacts, ...constrainedFacts].map(([inputID, factsObj]) => {
             const constTups = factsObj.invalidConstantTuples;
             const s = constTupConstraintFailures.get(inputID);
             if (s !== undefined) [...s].forEach(x => constTups.add(x));
-            return [inputID, constTups];
+            const lines = new Set([...constTups].map(
+                x => warnIfNotString(inputMap.constantTupleToOriginal.get(x))
+            ));
+            return [inputID, lines];
         }),
     );
 
-    const solution: ParsedSolution = resultObj
-                                     ? parseSolution(resultObj)
-                                     : "invalid-input";
+    const solution: ParsedSolution = (
+        resultObj
+        ? parseSolution(resultObj, inputMap.constantToOriginal)
+        : "invalid-input"
+    );
     if (typeof solution !== "string") {
         sortSolution(solution);
     }
 
-    return {solution, invalidConstantTuples};
+    return {solution, invalidLines};
 }
 
