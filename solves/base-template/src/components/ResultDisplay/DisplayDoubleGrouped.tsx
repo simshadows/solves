@@ -16,18 +16,31 @@ type GroupedSolution = [string, string[][]][];
 
 /*** ***/
 
-interface GroupDisplayProps {
-    key:       string;
-    groupName: string;
-    data:      string[][];
+interface LowPriorityDisplayProps {
+    key:           string;
+    groupLabel:    string;
+    groupPriority: [number, number]; // position 0 is highest priority
+    data:          string[][];
 }
 
-function GroupDisplay(props: GroupDisplayProps) {
-    // TODO: How to splice multiple arbitrary indices in a simple manner?
-    const modifiedData: string[][] = props.data.map(x => [...x].splice(2));
+function LowPriorityDisplay(props: LowPriorityDisplayProps) {
+    const [hi, lo] = (
+        props.groupPriority[0] > props.groupPriority[1]
+        ? [props.groupPriority[0], props.groupPriority[1]]
+        : [props.groupPriority[1], props.groupPriority[0]]
+    );
+
+    const op: (x: string[]) => string[] = (x) => {
+        const arr = [...x];
+        arr.splice(hi, 1);
+        arr.splice(lo, 1);
+        return arr;
+    };
+    const modifiedData: string[][] = props.data.map(op);
+
     return <table className="display-double-grouped-table">
         <thead>
-            <tr><th>Group {props.groupName}</th></tr>
+            <tr><th>{props.groupLabel}</th></tr>
         </thead>
         <tbody>
             {modifiedData.map(
@@ -43,26 +56,29 @@ function GroupDisplay(props: GroupDisplayProps) {
 
 /*** ***/
 
-interface RoundDisplayProps {
-    key:       string;
-    roundName: string;
-    data:      string[][];
+interface HighPriorityDisplayProps {
+    key:           string;
+    fieldLabels:   string[];
+    groupLabel:    string;
+    groupPriority: [number, number]; // position 0 is highest priority
+    data:          string[][];
 }
 
-function RoundDisplay(props: RoundDisplayProps) {
+function HighPriorityDisplay(props: HighPriorityDisplayProps) {
     const grouped: GroupedSolution = arrayGroupAdjacent(
         props.data,
-        x => warnIfNotString(x[1]),
+        x => warnIfNotString(x[props.groupPriority[1]]),
     );
     return <div className="output-box">
         <span className="display-double-grouped-title">
-            Round {props.roundName}
+            {props.groupLabel}
         </span>
         <div className="display-double-grouped-inner">
             {grouped.map(
-                x => <GroupDisplay
+                x => <LowPriorityDisplay
                     key={x[0]}
-                    groupName={x[0]}
+                    groupLabel={`${props.fieldLabels[props.groupPriority[1]]} ${x[0]}`}
+                    groupPriority={props.groupPriority}
                     data={x[1]}
                 />
             )}
@@ -73,8 +89,9 @@ function RoundDisplay(props: RoundDisplayProps) {
 /*** ***/
 
 interface Props {
-    fieldLabels: string[];
-    solutionData: string[][];
+    fieldLabels:   string[];
+    groupPriority: [number, number]; // position 0 is highest priority
+    solutionData:  string[][];
 }
 
 export function DisplayDoubleGrouped(props: Props) {
@@ -86,15 +103,17 @@ export function DisplayDoubleGrouped(props: Props) {
 
     const groupedData: GroupedSolution = arrayGroupAdjacent(
         props.solutionData,
-        x => warnIfNotString(x[0]),
+        x => warnIfNotString(x[props.groupPriority[0]]),
     );
 
     return <>
         {
             groupedData.map(
-                x => <RoundDisplay
+                x => <HighPriorityDisplay
                     key={x[0]}
-                    roundName={x[0]}
+                    fieldLabels={props.fieldLabels}
+                    groupLabel={`${props.fieldLabels[props.groupPriority[0]]} ${x[0]}`}
+                    groupPriority={props.groupPriority}
                     data={x[1]}
                 />
             )

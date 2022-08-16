@@ -23,17 +23,29 @@ export function ResultDisplay(props: Props) {
     }
 
     return <>
-        <DisplayDoubleGrouped
-            fieldLabels={["Round", "Group", "Players"]}
-            solutionData={props.solutionData.assign}
-        />
 <% for (const [outputID, partialSpec] of Object.entries(output)) { -%>
+<%    if (partialSpec.groupPriority.length === 0) { -%>
         <DisplayTable
             fieldLabels={[<%-
-                partialSpec.fields.map(y => safeString(y.label)).join(", ")
+                partialSpec.fields.map(x => safeString(x.label)).join(", ")
             %>]}
             solutionData={props.solutionData.<%- outputID %>}
         />
+<%    } else if (partialSpec.groupPriority.length === 1) { -%>
+<%        throw new Error("Group priority of 1 is currently not supported.") -%>
+<%    } else if (partialSpec.groupPriority.length === 2) { -%>
+        <DisplayDoubleGrouped
+            fieldLabels={[<%-
+                partialSpec.fields.map(x => safeString(x.label)).join(", ")
+            %>]}
+            groupPriority={[<%-
+                partialSpec.groupPriority.map(x => String(x)).join(", ")
+            %>]}
+            solutionData={props.solutionData.<%- outputID %>}
+        />
+<%    } else { -%>
+<%        throw new Error(`Group priority greater than 2 is currently not supported.`) -%>
+<%    } -%>
 <% } -%>
     </>;
 }
